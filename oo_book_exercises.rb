@@ -48,3 +48,4 @@ end
 
 fred = MyCar.new(1997, 'red', 'prizm')
 puts fred
+feed the beast
