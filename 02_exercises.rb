@@ -2,9 +2,7 @@ class Person
   attr_accessor :first_name, :last_name
 
   def initialize(full_name)
-    names = full_name.split
-    self.first_name = names.first
-    self.last_name = names.size > 1 ? names.last : ''
+    parse_name(full_name)
   end
 
   def name
@@ -12,19 +10,21 @@ class Person
   end
 
   def name=(new_name)
-    names = new_name.split
+    parse_name(new_name)
+  end
+
+  def to_s
+    name
+  end
+
+  private
+
+  def parse_name(name)
+    names = name.split
     self.first_name = names.first
     self.last_name = names.size > 1 ? names.last : ''
   end
 end
 
-bob = Person.new('Robert')
-p bob.name                  # => 'Robert'
-p bob.first_name            # => 'Robert'
-p bob.last_name             # => ''
-bob.last_name = 'Smith'
-p bob.name                  # => 'Robert Smith'
-
-bob.name = "John Adams"
-p bob.first_name            # => 'John'
-p bob.last_name             # => 'Adams'
+bob = Person.new("Robert Smith")
+puts "The person's name is: #{bob}"
