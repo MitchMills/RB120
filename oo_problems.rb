@@ -1,5 +1,89 @@
 ### OO BASICS: CLASSES AND OBJECTS II
-## 01
+## 05 COUNTING CATS
+class Cat
+  @@number_of_cats = 0
+
+  def initialize
+    @@number_of_cats += 1
+  end
+
+  def self.total
+    puts @@number_of_cats
+  end
+end
+
+kitty1 = Cat.new
+kitty2 = Cat.new
+
+Cat.total
+
+## 04 Generic Greeting II
+# class Cat
+#   attr_reader :name
+
+#   def initialize(name)
+#     @name = name
+#   end
+
+#   def personal_greeting
+#     puts "Hello! My name is #{name}!"
+#   end
+
+#   def self.generic_greeting
+#     puts "Hello! I'm a cat!"
+#   end
+# end
+
+# kitty = Cat.new('Sophie')
+
+# Cat.generic_greeting
+# kitty.personal_greeting
+
+## 03 Identify Yourself I
+# class Cat
+#   attr_accessor :name
+
+#   def initialize(name)
+#     self.name = name
+#   end
+
+#   def identify
+#     self
+#   end
+# end
+
+# kitty = Cat.new('Sophie')
+# p kitty.identify
+# p kitty
+
+## 02 Hello, Chloe!
+# class Cat
+#   attr_accessor :name
+
+#   def initialize(name)
+#     self.name = name
+#   end
+
+#   def rename(new_name)
+#     self.name = new_name
+#   end
+# end
+
+# kitty = Cat.new('Sophie')
+# p kitty.name
+# kitty.rename('Chloe')
+# p kitty.name
+
+## 01 Generic Greeting I
+# class Cat
+#   def self.generic_greeting
+#     puts "Hello! I'm a cat!"
+#   end
+# end
+
+# Cat.generic_greeting
+# kitty = Cat.new
+# kitty.class.generic_greeting
 
 ### OO BASICS: CLASSES AND OBJECTS I
 ## 10 Walk the Cat
