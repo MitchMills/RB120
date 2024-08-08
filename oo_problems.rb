@@ -1,21 +1,104 @@
+
+
+
 ### OO BASICS: CLASSES AND OBJECTS II
+## 10 PROTECTED SECRET
+# class Person
+#   attr_writer :secret
+
+#   def compare_secret(other_person)
+#     secret == other_person.secret
+#   end
+
+#   protected
+
+#   attr_reader :secret
+# end
+
+# person1 = Person.new
+# person1.secret = 'Shh... this is a secret!'
+
+# person2 = Person.new
+# person2.secret = 'Shh... this is a different secret!'
+
+# puts person1.compare_secret(person2)
+
+## 09 PRIVATE SECRET
+# class Person
+#   attr_writer :secret
+
+#   def share_secret
+#     puts secret
+#   end
+
+#   private
+
+#   attr_reader :secret
+# end
+
+# person1 = Person.new
+# person1.secret = 'Shh... this is a secret!'
+# person1.share_secret
+
+## 08 PUBLIC SECRET
+# class Person
+#   attr_accessor :secret
+# end
+
+# person1 = Person.new
+# person1.secret = 'Shh... this is a secret!'
+# puts person1.secret
+
+## 07 IDENTIFY YOURSELF II
+# class Cat
+#   attr_reader :name
+
+#   def initialize(name)
+#     @name = name
+#   end
+
+#   def to_s
+#     "I'm #{name}!"
+#   end
+# end
+
+# kitty = Cat.new('Sophie')
+# puts kitty
+
+## 06 COLORFUL CAT
+# class Cat
+#   COLOR = 'purple'
+#   attr_accessor :name
+
+#   def initialize(name)
+#     self.name = name
+#   end
+
+#   def greet
+#     puts "Hello! My name is #{name} and I'm #{COLOR}!"
+#   end
+# end
+
+# kitty = Cat.new('Sophie')
+# kitty.greet
+
 ## 05 COUNTING CATS
-class Cat
-  @@number_of_cats = 0
+# class Cat
+#   @@number_of_cats = 0
 
-  def initialize
-    @@number_of_cats += 1
-  end
+#   def initialize
+#     @@number_of_cats += 1
+#   end
 
-  def self.total
-    puts @@number_of_cats
-  end
-end
+#   def self.total
+#     puts @@number_of_cats
+#   end
+# end
 
-kitty1 = Cat.new
-kitty2 = Cat.new
+# kitty1 = Cat.new
+# kitty2 = Cat.new
 
-Cat.total
+# Cat.total
 
 ## 04 Generic Greeting II
 # class Cat
