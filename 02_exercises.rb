@@ -1,30 +1,52 @@
-class Person
-  attr_accessor :first_name, :last_name
+### INHERITANCE
+## 2 TWO
+# class Mammal
+#   def run
+#     'running!'
+#   end
 
-  def initialize(full_name)
-    parse_name(full_name)
-  end
+#   def jump
+#     'jumping!'
+#   end
+# end
 
-  def name
-    "#{first_name} #{last_name}".strip
-  end
+# class Dog < Mammal
+#   def speak
+#     'bark!'
+#   end
 
-  def name=(new_name)
-    parse_name(new_name)
-  end
+#   def swim
+#     'swimming!'
+#   end
 
-  def to_s
-    name
-  end
+#   def fetch
+#     'fetching!'
+#   end
+# end
 
-  private
+# class Cat < Mammal
+#   def speak
+#     'meow!'
+#   end
+# end
 
-  def parse_name(name)
-    names = name.split
-    self.first_name = names.first
-    self.last_name = names.size > 1 ? names.last : ''
-  end
-end
+## 1 ONE
+# class Dog
+#   def speak
+#     'bark!'
+#   end
 
-bob = Person.new("Robert Smith")
-puts "The person's name is: #{bob}"
+#   def swim
+#     'swimming!'
+#   end
+# end
+
+# class Bulldog < Dog
+#   def swim
+#     "can't swim!"
+#   end
+# end
+
+# teddy = Bulldog.new
+# puts teddy.speak
+# puts teddy.swim
