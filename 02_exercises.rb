@@ -1,3 +1,5 @@
+
+
 ### INHERITANCE
 ## 2 TWO
 # class Mammal
