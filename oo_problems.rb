@@ -1,4 +1,41 @@
 ### OO EASY 1
+## 03 Fix the Program: Books I
+class Book
+  attr_reader :author, :title
+
+  def initialize(author, title)
+    @author = author
+    @title = title
+  end
+
+  def to_s
+    %("#{title}", by #{author})
+  end
+end
+
+book = Book.new('Neil Stephenson', 'Snow Crash')
+puts %(The author of "#{book.title}" is #{book.author}.)
+puts %(book = #{book}.)
+
+## 02 What's the Output?
+# class  Pet
+#   attr_reader :name
+
+#   def initialize(name)
+#     @name = name.to_s
+#   end
+
+#   def to_s
+#     "My name is #{@name.upcase}."
+#   end
+# end
+
+# name = "buffy"
+# fluffy = Pet.new(name)
+# puts fluffy.name
+# name.upcase!
+# puts fluffy.name
+
 ## 01 Banner Class
 # class Banner
 #   def initialize(message, width = (message.size + 2))
