@@ -1,24 +1,97 @@
+### OO EASY 1
+## 01 Banner Class
+# class Banner
+#   def initialize(message, width = (message.size + 2))
+#     @message = message
+#     @width = width
+#   end
+
+#   def to_s
+#     minimum_width = message.size + 2
+#     if width < minimum_width
+#       "Provided width must be at least #{minimum_width} for message to fit."
+#     elsif width > 80
+#       "Provided width must be no greater than 80."
+#     else
+#       [horizontal_rule, empty_line, message_line, empty_line, horizontal_rule].join("\n")
+#     end
+#   end
+
+#   private
+
+#   attr_reader :message, :width
+
+#   def horizontal_rule
+#     "+#{'-' * width}+"
+#   end
+
+#   def empty_line
+#     "|#{' ' * width}|"
+#   end
+
+#   def message_line
+#     "|#{message.center(width)}|"
+#   end
+# end
+
+# banner = Banner.new('To boldly go where no one has gone before.', 30)
+# puts banner
+# banner = Banner.new('', 3)
+# puts banner
+
+# class Banner
+#   def initialize(message)
+#     @message = message
+#     @width = message.size + 2
+#   end
+
+#   def to_s
+#     [horizontal_rule, empty_line, message_line, empty_line, horizontal_rule].join("\n")
+#   end
+
+#   private
+
+#   attr_reader :message, :width
+
+#   def horizontal_rule
+#     "+#{'-' * width}+"
+#   end
+
+#   def empty_line
+#     "|#{' ' * width}|"
+#   end
+
+#   def message_line
+#     "| #{message} |"
+#   end
+# end
+
+# banner = Banner.new('To boldly go where no one has gone before.')
+# puts banner
+# banner = Banner.new('')
+# puts banner
+
 ### OO BASICS: ACCESSOR METHODS
 ## 10 Unexpected Change
-class Person
-  def name=(full_name)
-    @first_name, @last_name = full_name.split
-  end
+# class Person
+#   def name=(full_name)
+#     @first_name, @last_name = full_name.split
+#   end
 
-  def name
-    "#{first_name} #{last_name}"
-  end
+#   def name
+#     "#{first_name} #{last_name}"
+#   end
 
-  private
+#   private
 
-  attr_reader :first_name, :last_name
+#   attr_reader :first_name, :last_name
 
 
-end
+# end
 
-person1 = Person.new
-person1.name = 'John'
-puts person1.name # => John Doe
+# person1 = Person.new
+# person1.name = 'John'
+# puts person1.name # => John Doe
 
 ## 09 Calculated Age
 # class Person
