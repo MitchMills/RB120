@@ -1,21 +1,184 @@
+### OO EASY 2
+## 01
+
+
 ### OO EASY 1
+## 10 Refactoring Vehicles
+# class Vehicle
+#   attr_reader :make, :model
+
+#   def initialize(make, model)
+#     @make = make
+#     @model = model
+#   end
+
+#   def to_s
+#     "#{make} #{model}"
+#   end
+# end
+
+# class Car < Vehicle
+#   def wheels
+#     4
+#   end
+# end
+
+# class Motorcycle < Vehicle
+#   def wheels
+#     2
+#   end
+# end
+
+# class Truck < Vehicle
+#   attr_reader :payload
+
+#   def initialize(make, model, payload)
+#     super(make, model)
+#     @payload = payload
+#   end
+
+#   def wheels
+#     6
+#   end
+# end
+
+## 09 Complet the Program: Cats!
+# class Pet
+#   def initialize(name, age)
+#     @name = name
+#     @age = age
+#   end
+# end
+
+# class Cat < Pet
+#   attr_reader :name, :age, :color
+
+#   def initialize(name, age, color)
+#     super(name, age)
+#     @color = color
+#   end
+
+#   def to_s
+#     "My cat #{name} is #{age} years old and has #{color} fur."
+#   end
+# end
+
+# pudding = Cat.new('Pudding', 7, 'black and white')
+# butterscotch = Cat.new('Butterscotch', 10, 'tan and white')
+# puts pudding
+# puts butterscotch
+
+## 08 Rectangles and Squares
+# class Rectangle
+#   def initialize(height, width)
+#     @height = height
+#     @width = width
+#   end
+
+#   def area
+#     @height * @width
+#   end
+# end
+
+# class Square < Rectangle
+#   def initialize(side_length)
+#     super(side_length, side_length)
+#   end
+# end
+
+# square = Square.new(5)
+# puts "area of square = #{square.area}"
+
+## 07 Buggy Code: Car Mileage
+# class Car
+#   attr_accessor :mileage
+
+#   def initialize
+#     @mileage = 0
+#   end
+
+#   def increment_mileage(miles)
+#     total = mileage + miles
+#     self.mileage = total
+#   end
+
+#   def print_mileage
+#     puts mileage
+#   end
+# end
+
+# car = Car.new
+# car.mileage = 5000
+# car.increment_mileage(678)
+# car.print_mileage
+
+## 06 Fix the Program: Flight Data
+# class Flight
+#   def initialize(flight_number)
+#     @database_handle = Database.init
+#     @flight_number = flight_number
+#   end
+# end
+
+## 05 Fix the Program: Persons
+# class Person
+#   def initialize(first_name, last_name)
+#     @first_name = first_name.capitalize
+#     @last_name = last_name.capitalize
+#   end
+
+#   def first_name=(new_first_name)
+#     @first_name = new_first_name.capitalize
+#   end
+
+#   def last_name=(new_last_name)
+#     @last_name = new_last_name.capitalize
+#   end
+
+#   def to_s
+#     "#{@first_name} #{@last_name}"
+#   end
+# end
+
+# person = Person.new('john', 'doe')
+# puts person # => John Doe
+
+# person.first_name = 'jane'
+# person.last_name = 'smith'
+# puts person # => Jane Smith
+
+## 04 Fix the Program: Books II
+# class Book
+#   attr_accessor :title, :author
+
+#   def to_s
+#     %("#{title}", by #{author})
+#   end
+# end
+
+# book = Book.new
+# book.author = 'Neil Stephenson'
+# book.title = 'Snow Crash'
+# puts %(The author of "#{book.title}" is #{book.author}.)
+# puts %(book = #{book}.)
+
 ## 03 Fix the Program: Books I
-class Book
-  attr_reader :author, :title
+# class Book
+#   attr_reader :author, :title
 
-  def initialize(author, title)
-    @author = author
-    @title = title
-  end
+#   def initialize(author, title)
+#     @author = author
+#     @title = title
+#   end
 
-  def to_s
-    %("#{title}", by #{author})
-  end
-end
+#   def to_s
+#     %("#{title}", by #{author})
+#   end
+# end
 
-book = Book.new('Neil Stephenson', 'Snow Crash')
-puts %(The author of "#{book.title}" is #{book.author}.)
-puts %(book = #{book}.)
+# book = Book.new('Neil Stephenson', 'Snow Crash')
+# puts %(The author of "#{book.title}" is #{book.author}.)
+# puts %(book = #{book}.)
 
 ## 02 What's the Output?
 # class  Pet
