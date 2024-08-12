@@ -1,4 +1,79 @@
 ### OO EASY 2
+## 06
+
+
+## 05 What Will This Do?
+# class Something
+#   def initialize
+#     @data = 'Hello'
+#   end
+
+#   def dupdata
+#     @data + @data
+#   end
+
+#   def self.dupdata
+#     'ByeBye'
+#   end
+# end
+
+# thing = Something.new
+# puts Something.dupdata
+# puts thing.dupdata
+
+## 04 Reverse Engineering
+# class Transform
+#   attr_reader :string
+
+#   def initialize(instance_string)
+#     @string = instance_string
+#   end
+
+#   def uppercase
+#     string.upcase
+#   end
+
+#   def self.lowercase(class_string)
+#     class_string.downcase
+#   end
+# end
+
+# my_data = Transform.new('abc')
+# puts my_data.uppercase
+# puts Transform.lowercase('XYZ')
+
+## 03 Complete the Program: Houses
+# class House
+#   attr_reader :price
+#   include Comparable
+
+#   def initialize(price)
+#     @price = price
+#   end
+
+#   def <=>(other_house)
+#     price <=> other_house.price
+#   end
+# end
+
+# home1 = House.new(100_000)
+# home2 = House.new(150_000)
+# puts "Home 1 is cheaper" if home1 < home2
+# puts "home2 is more expensive" if home2 > home1
+
+## 02 Fix the Program: Drivable
+# module Drivable
+#   def drive
+#   end
+# end
+
+# class Car
+#   include Drivable
+# end
+
+# bobs_car = Car.new
+# bobs_car.drive
+
 ## 01 Fix the Program: Mailable
 # module Mailable
 #   def print_address
