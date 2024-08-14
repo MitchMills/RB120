@@ -1,5 +1,28 @@
 ### OO EASY 2
 ## 07 Pet Shelter
+=begin
+Classes: Pet, Owner, Shelter
+Methods:
+  Pet.new(type, name)
+    @type
+    @name
+  pet.to_s
+
+  Owner.new(name)
+    @name
+    @pets
+  owner.name
+  owner.number_of_pets
+
+  Shelter.new
+    @pets
+  shelter.admit(pet)
+  shelter.adopt(owner, pet)
+  shelter.number_of_pets
+  shelter.print_adoptions
+  shelter.print_unadopted
+=end
+
 class Pet
   attr_reader :type, :name
 
@@ -7,46 +30,64 @@ class Pet
     @type = type
     @name = name
   end
+
+  def to_s
+    "a #{type} named #{name}"
+  end
 end
 
 class Owner
-  attr_reader :name, :number_of_pets
-  attr_accessor :pets
+  attr_reader :name, :pets
 
   def initialize(name)
     @name = name
-    self.pets = []
+    @pets = []
+  end
+
+  def adopt_pet(pet)
+    @pets << pet
   end
 
   def number_of_pets
     pets.size
   end
 
-  def to_s
-    name
+  def print_pets
+    puts pets
   end
 end
 
 class Shelter
-  attr_accessor :adoptions
-
   def initialize
-    self.adoptions = {}
+    @unadopted_pets = []
+    @adopters = {}
+  end
+
+  def admit(pet)
+    @unadopted_pets << pet
+  end
+
+  def number_of_pets
+    @unadopted_pets.size
   end
 
   def adopt(owner, pet)
-    owner.pets << pet
-    adoptions[owner] ? adoptions[owner] << pet : adoptions[owner] = [pet]
+    @unadopted_pets - [pet]
+    owner.adopt_pet(pet)
+    @adopters[owner.name] = owner unless @adopters[owner.name]
   end
 
   def print_adoptions
-    adoptions.each do |owner, pets|
-      puts "#{owner} has adopted the following pets:"
-      pets.each do |pet|
-        puts "a #{pet.type} named #{pet.name}"
-      end
+    @adopters.each do |name, owner|
+      puts "#{name} has adopted the following pets:"
+      owner.print_pets
       puts
     end
+  end
+
+  def print_unadopted
+    puts "the Animal Shelter has the following unadopted pets:"
+    puts @unadopted_pets
   end
 end
 
@@ -62,6 +103,17 @@ phanson = Owner.new('P Hanson')
 bholmes = Owner.new('B Holmes')
 
 shelter = Shelter.new
+shelter.admit(butterscotch)
+shelter.admit(pudding)
+shelter.admit(darwin)
+shelter.admit(kennedy)
+shelter.admit(sweetie)
+shelter.admit(molly)
+shelter.admit(chester)
+shelter.print_unadopted
+puts "The Animal shelter has #{shelter.number_of_pets} unadopted pets."
+puts
+
 shelter.adopt(phanson, butterscotch)
 shelter.adopt(phanson, pudding)
 shelter.adopt(phanson, darwin)
