@@ -1,15 +1,144 @@
-# hash = {}
-# hash[:a] = 1
-# keys = [:a, :b, :c]
-# keys.each do |key|
-#   hash[key] ? nil : hash[key] = 3
+### OO EASY 2
+## 09 Nobility
+module Walkable
+  def walk
+    "#{display_name} #{gait} forward"
+  end
+end
+
+class Animal
+  attr_reader :name, :display_name
+
+  include Walkable
+
+  def initialize(name)
+    @name = name
+  end
+
+  def display_name
+    name
+  end
+end
+
+class Person < Animal
+  private
+
+  def gait
+    'strolls'
+  end
+end
+
+class Noble < Person
+  attr_reader :title
+
+  def initialize(name, title)
+    super(name)
+    @title = title
+  end
+
+  def display_name
+    "#{title} #{name}"
+  end
+
+  private
+
+  def gait
+    'struts'
+  end
+end
+
+class Cat < Animal
+  private
+
+  def gait
+    'saunters'
+  end
+end
+
+class Cheetah < Cat
+  private
+
+  def gait
+    'runs'
+  end
+end
+
+mike = Person.new("Mike")
+p mike.walk
+kitty = Cat.new("Kitty")
+p kitty.walk
+flash = Cheetah.new("Flash")
+p flash.walk
+
+byron = Noble.new('Byron', 'Lord')
+p byron.walk
+p byron.name
+p byron.title
+
+## 08 Moving
+# module Walkable
+#   def walk
+#     "#{name} #{gait} forward"
+#   end
 # end
 
-# p hash
+# class Person
+#   attr_reader :name
 
+#   include Walkable
 
+#   def initialize(name)
+#     @name = name
+#   end
 
-### OO EASY 2
+#   private
+
+#   def gait
+#     'strolls'
+#   end
+# end
+
+# class Cat
+#   attr_reader :name
+
+#   include Walkable
+
+#   def initialize(name)
+#     @name = name
+#   end
+
+#   private
+
+#   def gait
+#     'saunters'
+#   end
+# end
+
+# class Cheetah
+#   attr_reader :name
+
+#   include Walkable
+
+#   def initialize(name)
+#     @name = name
+#   end
+
+#   private
+
+#   def gait
+#     'runs'
+#   end
+# end
+
+# mike = Person.new('Mike')
+# mike.walk
+
+# kitty = Cat.new('Kitty')
+# kitty.walk
+
+# flash = Cheetah.new('Flash')
+# flash.walk
+
 ## 07 Pet Shelter
 =begin
 Classes: Pet, Owner, Shelter
@@ -98,7 +227,7 @@ Methods:
 
 #   def print_unadopted
 #     puts "the Animal Shelter has the following unadopted pets:"
-#     @unadopted_pets.each { |name,pet| puts "  #{pet}" }
+#     @unadopted_pets.each { |name, pet| puts "  #{pet}" }
 #   end
 # end
 
