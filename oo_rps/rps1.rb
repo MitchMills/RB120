@@ -24,12 +24,12 @@ class Human < Player
     loop do
       print "Please choose rock, paper, or scissors: "
       choice = gets.chomp
-      break if %w(rock paper scissors).include?(choice)
+      break if Move::VALUES.include?(choice)
       puts "Sorry, invalid choice."
       puts
     end
     puts
-    self.move = choice
+    self.move = Move.new(choice)
   end
 end
 
@@ -39,12 +39,52 @@ class Computer < Player
   end
 
   def choose
-    self.move = %w(rock paper scissors).sample
+    self.move = Move.new(Move::VALUES.sample)
   end
 end
 
 class Move
+  VALUES = %w(rock paper scissors)
 
+  def initialize(value)
+    @value = value
+  end
+
+  def rock?
+    @value == 'rock'
+  end
+
+  def paper?
+    @value == 'paper'
+  end
+
+  def scissors?
+    @value == 'scissors'
+  end
+
+  def >(other_move)
+    if rock?
+      other_move.scissors?
+    elsif paper?
+      other_move.rock?
+    elsif scissors?
+      other_move.paper?
+    end
+  end
+
+  def <(other_move)
+    if rock?
+      other_move.paper?
+    elsif paper?
+      other_move.scissors?
+    elsif scissors?
+      other_move.rock?
+    end
+  end
+
+  def to_s
+    @value
+  end
 end
 
 # Game Orchestration Engine
@@ -76,11 +116,20 @@ class RPSGame
   end
 
   def determine_winner
-    case human.move <=> computer.move
-    when 1 then puts "#{human.name} won!"
-    when -1 then puts "#{computer.name} won!"
-    else puts "It's a tie."
+    if human.move > computer.move
+      puts "#{human.name} won!"
+    elsif human.move < computer.move
+      puts "#{computer.name} won!"
+    else
+      puts "It's a tie."
     end
+
+    # case human.move <=> computer.move
+    # when 1 then puts "#{human.name} won!"
+    # when -1 then puts "#{computer.name} won!"
+    # else puts "It's a tie."
+    # end
+
     puts
   end
 
@@ -108,6 +157,7 @@ class RPSGame
       computer.choose
       display_winner
       break unless play_again?
+      system 'clear'
     end
     display_goodbye_message
   end
