@@ -1,48 +1,50 @@
 class Player
   attr_accessor :move, :name
 
-  def initialize(player_type = :human)
-    @player_type = player_type
-    @move = nil
+  def initialize
     set_name
   end
+end
 
+class Human < Player
   def set_name
-    if human?
-      entered_name = ''
-      loop do
-        print "Please enter your name: "
-        entered_name = gets.chomp
-        break unless entered_name.empty?
-        puts "Sorry, you must enter a value."
-        puts
-      end
-      self.name = entered_name
-    else
-      self.name = %w(Number 5 HAL Bender Kryten Rosie).sample
+    entered_name = ''
+    loop do
+      print "Please enter your name: "
+      entered_name = gets.chomp
+      break unless entered_name.empty?
+      puts "Sorry, you must enter a value."
+      puts
     end
+    self.name = entered_name
   end
 
   def choose
-    if human?
-      choice = nil
-      loop do
-        print "Please choose rock, paper, or scissors: "
-        choice = gets.chomp
-        break if %w(rock paper scissors).include?(choice)
-        puts "Sorry, invalid choice."
-        puts
-      end
+    choice = nil
+    loop do
+      print "Please choose rock, paper, or scissors: "
+      choice = gets.chomp
+      break if %w(rock paper scissors).include?(choice)
+      puts "Sorry, invalid choice."
       puts
-      self.move = choice
-    else
-      self.move = %w(rock paper scissors).sample
     end
+    puts
+    self.move = choice
+  end
+end
+
+class Computer < Player
+  def set_name
+    self.name = %w(C3PO HAL Bender Kryten Rosie).sample
   end
 
-  def human?
-    @player_type == :human
+  def choose
+    self.move = %w(rock paper scissors).sample
   end
+end
+
+class Move
+
 end
 
 # Game Orchestration Engine
@@ -51,8 +53,8 @@ class RPSGame
 
   def initialize
     display_welcome_message
-    @human = Player.new
-    @computer = Player.new(:computer)
+    @human = Human.new
+    @computer = Computer.new
   end
 
   def display_welcome_message
@@ -74,19 +76,10 @@ class RPSGame
   end
 
   def determine_winner
-    case human.move
-    when 'rock'
-      puts "It's a tie." if computer.move == 'rock'
-      puts "#{human.name} won!" if computer.move == 'scissors'
-      puts "#{computer.name} won!" if computer.move == 'paper'
-    when 'scissors'
-      puts "It's a tie." if computer.move == 'scissors'
-      puts "#{human.name} won!" if computer.move == 'paper'
-      puts "#{computer.name} won!" if computer.move == 'rock'
-    when 'paper'
-      puts "It's a tie." if computer.move == 'scissors'
-      puts "#{human.name} won!" if computer.move == 'rock'
-      puts "#{computer.name} won!" if computer.move == 'scissors'
+    case human.move <=> computer.move
+    when 1 then puts "#{human.name} won!"
+    when -1 then puts "#{computer.name} won!"
+    else puts "It's a tie."
     end
     puts
   end
