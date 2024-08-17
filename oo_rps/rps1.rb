@@ -89,6 +89,21 @@ class RPSGame
     @computer = Computer.new
   end
 
+  def play
+    display_players
+    loop do
+      human.choose
+      computer.choose
+      display_moves
+      display_result
+      break unless play_again?
+      system 'clear'
+    end
+    display_goodbye_message
+  end
+
+  private
+
   def display_welcome_message
     system 'clear'
     puts "Welcome to Rock, Paper, Scissors!"
@@ -146,19 +161,6 @@ class RPSGame
 
   def display_goodbye_message
     puts "Thank you for playing, #{human.name}! Goodbye."
-  end
-
-  def play
-    display_players
-    loop do
-      human.choose
-      computer.choose
-      display_moves
-      display_result
-      break unless play_again?
-      system 'clear'
-    end
-    display_goodbye_message
   end
 end
 
