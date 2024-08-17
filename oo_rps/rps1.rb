@@ -1,3 +1,4 @@
+# Player Classes
 class Player
   attr_accessor :move, :name
 
@@ -43,6 +44,7 @@ class Computer < Player
   end
 end
 
+# Move Classes
 class Move
   VALUES = %w(rock paper scissors)
 
@@ -122,13 +124,13 @@ class RPSGame
   end
 
   def display_result
-    moves, verb = result_words
+    moves, verb = generate_result_words
     puts "#{moves.first.capitalize} #{verb} #{moves.last}."
     puts
     display_winner
   end
 
-  def result_words
+  def generate_result_words
     moves = [human.move, computer.move].map(&:to_s)
     moves.reverse! if computer.move > human.move
     verb = moves.first == moves.last ? "is equal to" : "beats"
