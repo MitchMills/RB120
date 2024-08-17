@@ -63,23 +63,15 @@ class Move
   end
 
   def >(other_move)
-    if rock?
-      other_move.scissors?
-    elsif paper?
-      other_move.rock?
-    elsif scissors?
-      other_move.paper?
-    end
+    (rock? && other_move.scissors?) ||
+      (paper? && other_move.rock?) ||
+      (scissors? && other_move.paper?)
   end
 
   def <(other_move)
-    if rock?
-      other_move.paper?
-    elsif paper?
-      other_move.scissors?
-    elsif scissors?
-      other_move.rock?
-    end
+    (rock? && other_move.paper?) ||
+      (paper? && other_move.scissors?) ||
+      (scissors? && other_move.rock?)
   end
 
   def to_s
@@ -108,14 +100,27 @@ class RPSGame
     puts
   end
 
-  def display_winner
+  def display_moves
     puts "#{human.name} chose #{human.move}."
     puts "#{computer.name} chose #{computer.move}."
     puts
-    determine_winner
   end
 
-  def determine_winner
+  def display_result
+    moves, verb = result_words
+    puts "#{moves.first.capitalize} #{verb} #{moves.last}."
+    puts
+    display_winner
+  end
+
+  def result_words
+    moves = [human.move, computer.move].map(&:to_s)
+    moves.reverse! if computer.move > human.move
+    verb = moves.first == moves.last ? "is equal to" : "beats"
+    [moves, verb]
+  end
+
+  def display_winner
     if human.move > computer.move
       puts "#{human.name} won!"
     elsif human.move < computer.move
@@ -123,13 +128,6 @@ class RPSGame
     else
       puts "It's a tie."
     end
-
-    # case human.move <=> computer.move
-    # when 1 then puts "#{human.name} won!"
-    # when -1 then puts "#{computer.name} won!"
-    # else puts "It's a tie."
-    # end
-
     puts
   end
 
@@ -155,7 +153,8 @@ class RPSGame
     loop do
       human.choose
       computer.choose
-      display_winner
+      display_moves
+      display_result
       break unless play_again?
       system 'clear'
     end
