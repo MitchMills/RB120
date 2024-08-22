@@ -1,26 +1,57 @@
-class KrispyKreme
-  attr_reader :filling_type, :glazing
+module Moveable
+  attr_accessor :speed, :heading
+  attr_writer :fuel_capacity, :fuel_efficiency
 
-  def initialize(filling_type, glazing)
-    @filling_type = filling_type
-    @glazing = glazing
-  end
-
-  def to_s
-    filling = filling_type ? "#{filling_type.capitalize}" : "Plain"
-    with_glazing = glazing ? " with #{glazing}" : ''
-    "#{filling}#{with_glazing}"
+  def range
+    @fuel_capacity * @fuel_efficiency
   end
 end
 
-donut1 = KrispyKreme.new(nil, nil)
-donut2 = KrispyKreme.new("Vanilla", nil)
-donut3 = KrispyKreme.new(nil, "sugar")
-donut4 = KrispyKreme.new(nil, "chocolate sprinkles")
-donut5 = KrispyKreme.new("Custard", "icing")
+class WheeledVehicle
+  include Moveable
 
-puts donut1 # => "Plain"
-puts donut2 # => "Vanilla"
-puts donut3 # => "Plain with sugar"
-puts donut4 # => "Plain with chocolate sprinkles"
-puts donut5 # => "Custard with icing"
+  def initialize(tire_array, km_traveled_per_liter, liters_of_fuel_capacity)
+    @tires = tire_array
+    @fuel_efficiency = km_traveled_per_liter
+    @fuel_capacity = liters_of_fuel_capacity
+  end
+
+  def tire_pressure(tire_index)
+    @tires[tire_index]
+  end
+
+  def inflate_tire(tire_index, pressure)
+    @tires[tire_index] = pressure
+  end
+end
+
+class Auto < WheeledVehicle
+  def initialize
+    super([30, 30, 32, 32], 50, 25.0)
+  end
+end
+
+class Motorcycle < WheeledVehicle
+  def initialize
+    super([20, 20], 80, 8.0)
+  end
+end
+
+class Catamaran
+  include Moveable
+
+  attr_reader :propeller_count, :hull_count
+
+  def initialize(num_propellers, num_hulls, km_traveled_per_liter, liters_of_fuel_capacity)
+    self.fuel_capacity = liters_of_fuel_capacity
+    self.fuel_efficiency = km_traveled_per_liter
+  end
+end
+
+car = Auto.new
+cycle = Motorcycle.new
+cat_stevens = Catamaran.new(2, 2, 20, 15.0)
+
+p car.range
+p cycle.range
+p cat_stevens.range
