@@ -12,8 +12,8 @@ class WheeledVehicle
 
   def initialize(tire_array, km_traveled_per_liter, liters_of_fuel_capacity)
     @tires = tire_array
-    @fuel_efficiency = km_traveled_per_liter
-    @fuel_capacity = liters_of_fuel_capacity
+    self.fuel_efficiency = km_traveled_per_liter
+    self.fuel_capacity = liters_of_fuel_capacity
   end
 
   def tire_pressure(tire_index)
@@ -37,21 +37,34 @@ class Motorcycle < WheeledVehicle
   end
 end
 
-class Catamaran
+class Seacraft
   include Moveable
 
   attr_reader :propeller_count, :hull_count
 
-  def initialize(num_propellers, num_hulls, km_traveled_per_liter, liters_of_fuel_capacity)
-    self.fuel_capacity = liters_of_fuel_capacity
-    self.fuel_efficiency = km_traveled_per_liter
+  def initialize(num_propellers, num_hulls, fuel_efficiency, fuel_capacity)
+    @propeller_count = num_propellers
+    @hull_count = num_hulls
+    self.fuel_efficiency = fuel_efficiency
+    self.fuel_capacity = fuel_capacity
+  end
+
+  def range
+    super + 10
   end
 end
 
-car = Auto.new
-cycle = Motorcycle.new
-cat_stevens = Catamaran.new(2, 2, 20, 15.0)
+class Catamaran < Seacraft
 
-p car.range
-p cycle.range
-p cat_stevens.range
+end
+
+class Motorboat < Seacraft
+  def initialize(km_traveled_per_liter, liters_of_fuel_capacity)
+    super(1, 1, km_traveled_per_liter, liters_of_fuel_capacity)
+  end
+end
+
+cricket = Catamaran.new(2, 2, 30, 30.0)
+p cricket.range
+rocket = Motorboat.new(20, 30.0)
+p rocket.range
