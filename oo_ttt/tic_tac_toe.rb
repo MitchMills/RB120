@@ -1,33 +1,76 @@
-class Board # BOARD
-  INITIAL_MARK = ' '
+class Board # BOARD # BOARD # BOARD
+  WINNING_LINES = [
+    [1, 2, 3], [4, 5, 6], [7, 8, 9],  # horizontal
+    [1, 4, 7], [2, 5, 8], [3, 6, 9],  # vertical
+    [1, 5, 9], [3, 5, 7]              # diagonal
+  ]
+
+  attr_reader :squares
 
   def initialize
     @squares = {}
-    (1..9).each { |key| @squares[key] = Square.new(INITIAL_MARK) }
+    (1..9).each { |key| squares[key] = Square.new }
   end
 
   def get_square_at(key)
-    @squares[key]
+    squares[key]
   end
 
   def set_square_at(key, mark)
-    @squares[key].mark = mark
+    squares[key].mark = mark
+  end
+
+  def unmarked_square_keys
+    squares.keys.select { |key| squares[key].unmarked? }
+  end
+
+  def full?
+    unmarked_square_keys.empty?
+  end
+
+  def someone_won?
+    !!detect_winner
+  end
+
+  def detect_winner
+    WINNING_LINES.each do |line|
+      if count_human_marks(@squares.values_at(*line)) == 3
+        return TTTGame::HUMAN_MARK
+      elsif count_computer_marks(@squares.values_at(*line)) == 3
+        return TTTGame::COMPUTER_MARK
+      end
+    end
+    nil
+  end
+
+  def count_human_marks(squares)
+    squares.map(&:mark).count(TTTGame::HUMAN_MARK)
+  end
+
+  def count_computer_marks(squares)
+    squares.map(&:mark).count(TTTGame::COMPUTER_MARK)
   end
 end
 
-class Square #SQUARE
+class Square #SQUARE #SQUARE #SQUARE
+  INITIAL_MARK = ' '
+
   attr_accessor :mark
 
-  def initialize(mark)
+  def initialize(mark = INITIAL_MARK)
     @mark = mark
   end
 
   def to_s
     @mark
   end
+
+  def unmarked?
+    mark == INITIAL_MARK
+  end
 end
 
-class Player # PLAYER
+class Player # PLAYER # PLAYER # PLAYER
   attr_reader :mark
 
   def initialize(mark)
@@ -36,28 +79,31 @@ class Player # PLAYER
 end
 
 # Orchestration Engine
-class TTTGame # TTTGame
+class TTTGame # TTTGame # TTTGame # TTTGame
+  HUMAN_MARK = 'X'
+  COMPUTER_MARK = 'O'
+
   attr_reader :board, :human, :computer
 
   def initialize
     @board = Board.new
-    @human = Player.new('X')
-    @computer = Player.new('O')
+    @human = Player.new(HUMAN_MARK)
+    @computer = Player.new(COMPUTER_MARK)
   end
 
   def play
     display_welcome_message
+    display_board
     loop do
-      display_board
       human_moves
-      display_board
-      break
-      break if someone_won? || board_full?
+      break if board.someone_won? || board.full?
 
       computer_moves
-      break if someone_won? || board_full?
+      break if board.someone_won? || board.full?
+
+      display_board
     end
-    # display_result
+    display_result
     display_goodbye_message
   end
 
@@ -67,6 +113,8 @@ class TTTGame # TTTGame
   end
 
   def display_board
+    system 'clear'
+    puts "Your mark is '#{human.mark}', The computer's mark is '#{computer.mark}'"
     puts ""
     puts "     |     |"
     puts "  #{board.get_square_at(1)}  |  #{board.get_square_at(2)}  |  #{board.get_square_at(3)}"
@@ -83,14 +131,33 @@ class TTTGame # TTTGame
   end
 
   def human_moves
-    print "Choose a square between 1 and 9: "
+    empty_squares = board.unmarked_square_keys.join(', ')
+    print "Choose an empty square (#{empty_squares}): "
     choice = nil
     loop do
       choice = gets.chomp.to_i
-      break if (1..9).include?(choice)
-      puts "Sorry, that's not a valid square."
+      break if board.unmarked_square_keys.include?(choice)
+      puts "Sorry, that's not a valid choice."
     end
-    board.set_square_at(choice, @human.mark)
+
+    board.set_square_at(choice, human.mark)
+  end
+
+  def computer_moves
+    choice = board.unmarked_square_keys.sample
+    board.set_square_at(choice, computer.mark)
+  end
+
+  def display_result
+    display_board
+    case board.detect_winner
+    when human.mark
+      puts "You won!"
+    when computer.mark
+      puts "Computer won!"
+    else
+      puts "It's a tie."
+    end
   end
 
   def display_goodbye_message
