@@ -1,3 +1,5 @@
+require 'pry'
+
 class Board # BOARD # BOARD # BOARD
   WINNING_LINES = [
     [1, 2, 3], [4, 5, 6], [7, 8, 9],  # horizontal
@@ -9,7 +11,7 @@ class Board # BOARD # BOARD # BOARD
 
   def initialize
     @squares = {}
-    (1..9).each { |key| squares[key] = Square.new }
+    reset
   end
 
   def get_square_at(key)
@@ -33,23 +35,39 @@ class Board # BOARD # BOARD # BOARD
   end
 
   def detect_winner
-    WINNING_LINES.each do |line|
-      if count_human_marks(@squares.values_at(*line)) == 3
+    WINNING_LINES.each do |squares|
+      if squares.all? { |key| @squares[key].mark == TTTGame::HUMAN_MARK }
         return TTTGame::HUMAN_MARK
-      elsif count_computer_marks(@squares.values_at(*line)) == 3
+      elsif squares.all? { |key| @squares[key].mark == TTTGame::COMPUTER_MARK }
         return TTTGame::COMPUTER_MARK
       end
     end
     nil
   end
 
-  def count_human_marks(squares)
-    squares.map(&:mark).count(TTTGame::HUMAN_MARK)
+  def reset
+    (1..9).each { |key| squares[key] = Square.new }
   end
 
-  def count_computer_marks(squares)
-    squares.map(&:mark).count(TTTGame::COMPUTER_MARK)
-  end
+  # def detect_winner
+  #   WINNING_LINES.each do |line|
+  #     if count_human_marks(@squares.values_at(*line)) == 3
+  #       return TTTGame::HUMAN_MARK
+  #     elsif count_computer_marks(@squares.values_at(*line)) == 3
+  #       return TTTGame::COMPUTER_MARK
+  #     end
+  #   end
+  #   nil
+  # end
+
+  # def count_human_marks(squares)
+  #   squares.map(&:mark).count(TTTGame::HUMAN_MARK)
+  # end
+
+  # def count_computer_marks(squares)
+  #   squares.map(&:mark).count(TTTGame::COMPUTER_MARK)
+  # end
+
 end
 
 class Square #SQUARE #SQUARE #SQUARE
@@ -92,18 +110,29 @@ class TTTGame # TTTGame # TTTGame # TTTGame
   end
 
   def play
+    system 'clear'
     display_welcome_message
-    display_board
+
     loop do
-      human_moves
-      break if board.someone_won? || board.full?
+      display_board(false)
 
-      computer_moves
-      break if board.someone_won? || board.full?
+      loop do
+        human_moves
+        break if board.someone_won? || board.full?
 
-      display_board
+        computer_moves
+        break if board.someone_won? || board.full?
+
+        display_board
+      end
+      display_result
+      break unless play_again?
+      board.reset
+      system 'clear'
+      puts "Let's play again!"
+      puts
     end
-    display_result
+
     display_goodbye_message
   end
 
@@ -112,8 +141,9 @@ class TTTGame # TTTGame # TTTGame # TTTGame
     puts ''
   end
 
-  def display_board
-    system 'clear'
+  def display_board(clear_screen = true)
+    system 'clear' if clear_screen
+    2.times { puts } if clear_screen
     puts "Your mark is '#{human.mark}', The computer's mark is '#{computer.mark}'"
     puts ""
     puts "     |     |"
@@ -158,6 +188,19 @@ class TTTGame # TTTGame # TTTGame # TTTGame
     else
       puts "It's a tie."
     end
+  end
+
+  def play_again?
+    answer = nil
+    loop do
+      print "Would you like to play again? (y/n): "
+      answer = gets.chomp.downcase
+      break if %w(y n).include? answer
+      puts "Sorry, you can only answer y or n."
+      puts
+    end
+
+    answer == 'y'
   end
 
   def display_goodbye_message
