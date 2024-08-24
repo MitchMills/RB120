@@ -1,5 +1,3 @@
-require 'pry'
-
 class Board # BOARD # BOARD # BOARD
   WINNING_LINES = [
     [1, 2, 3], [4, 5, 6], [7, 8, 9],  # horizontal
@@ -18,6 +16,7 @@ class Board # BOARD # BOARD # BOARD
     (1..9).each { |key| squares[key] = Square.new }
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def draw
     puts "     |     |"
     puts "  #{@squares[1]}  |  #{@squares[2]}  |  #{@squares[3]}"
@@ -31,6 +30,7 @@ class Board # BOARD # BOARD # BOARD
     puts "  #{@squares[7]}  |  #{@squares[8]}  |  #{@squares[9]}"
     puts "     |     |"
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   def []=(key, mark)
     @squares[key].mark = mark
@@ -70,7 +70,7 @@ class Board # BOARD # BOARD # BOARD
   end
 end
 
-class Square #SQUARE #SQUARE #SQUARE
+class Square # SQUARE # SQUARE # SQUARE
   INITIAL_MARK = ' '
 
   attr_accessor :mark
@@ -116,26 +116,30 @@ class TTTGame # GAME GAME GAME GAME GAME
 
   def play
     display_welcome_message
+    main_game
+    display_goodbye_message
+  end
 
+  private
+
+  def main_game
     loop do
       display_board
-
-      loop do
-        current_player_moves
-        break if board.someone_won? || board.full?
-        clear_screen_and_display_board if human_turn?
-      end
-
+      player_move
       display_result
       break unless play_again?
       reset
       display_play_again_message
     end
-
-    display_goodbye_message
   end
 
-  private
+  def player_move
+    loop do
+      current_player_moves
+      break if board.someone_won? || board.full?
+      clear_screen_and_display_board if human_turn?
+    end
+  end
 
   def display_welcome_message
     clear_screen
