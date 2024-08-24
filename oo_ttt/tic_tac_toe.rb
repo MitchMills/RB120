@@ -14,6 +14,10 @@ class Board # BOARD # BOARD # BOARD
     reset
   end
 
+  def reset
+    (1..9).each { |key| squares[key] = Square.new }
+  end
+
   def draw
     puts "     |     |"
     puts "  #{@squares[1]}  |  #{@squares[2]}  |  #{@squares[3]}"
@@ -46,18 +50,16 @@ class Board # BOARD # BOARD # BOARD
 
   def winning_marker
     WINNING_LINES.each do |keys|
-      if all_marked?(keys) && all_same_mark?(keys)
-       return squares[keys.first].mark
-      end
+      return squares[keys.first].mark if winning_line?(keys)
     end
     nil
   end
 
-  def reset
-    (1..9).each { |key| squares[key] = Square.new }
-  end
-
   private
+
+  def winning_line?(keys)
+    all_marked?(keys) && all_same_mark?(keys)
+  end
 
   def all_marked?(keys)
     keys.all? { |key| squares[key].marked? }
@@ -98,7 +100,7 @@ class Player # PLAYER # PLAYER # PLAYER
   end
 end
 
-class TTTGame # TTTGame # TTTGame # TTTGame
+class TTTGame # GAME GAME GAME GAME GAME
   HUMAN_MARK = 'X'
   COMPUTER_MARK = 'O'
   FIRST_TO_MOVE = HUMAN_MARK
@@ -215,7 +217,7 @@ class TTTGame # TTTGame # TTTGame # TTTGame
 
   def reset
     board.reset
-    current_mark = FIRST_TO_MOVE
+    @current_mark = FIRST_TO_MOVE
     clear_screen
   end
 
@@ -225,6 +227,7 @@ class TTTGame # TTTGame # TTTGame # TTTGame
   end
 
   def display_goodbye_message
+    puts
     puts 'Thanks for playing Tic Tac Toe!'
   end
 end
