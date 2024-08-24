@@ -35,10 +35,10 @@ class Board # BOARD # BOARD # BOARD
   end
 
   def detect_winner
-    WINNING_LINES.each do |squares|
-      if squares.all? { |key| @squares[key].mark == TTTGame::HUMAN_MARK }
+    WINNING_LINES.each do |keys|
+      if keys.all? { |key| squares[key].mark == TTTGame::HUMAN_MARK }
         return TTTGame::HUMAN_MARK
-      elsif squares.all? { |key| @squares[key].mark == TTTGame::COMPUTER_MARK }
+      elsif keys.all? { |key| squares[key].mark == TTTGame::COMPUTER_MARK }
         return TTTGame::COMPUTER_MARK
       end
     end
@@ -163,6 +163,7 @@ class TTTGame # TTTGame # TTTGame # TTTGame
   def human_moves
     empty_squares = board.unmarked_square_keys.join(', ')
     print "Choose an empty square (#{empty_squares}): "
+
     choice = nil
     loop do
       choice = gets.chomp.to_i
