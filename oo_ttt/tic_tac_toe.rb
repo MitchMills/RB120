@@ -1,3 +1,112 @@
+module DisplayMethods
+  def clear_screen
+    system 'clear'
+  end
+
+  def display_welcome_message
+    clear_screen
+    puts 'Welcome to Tic Tac Toe!'
+  end
+
+  def display_board
+    puts "Your Mark: '#{human.mark}'  Computer's Mark:'#{computer.mark}'"
+    puts
+    board.draw
+    puts
+  end
+
+  def clear_screen_and_display_board
+    clear_screen
+    display_board
+  end
+
+  def display_available_moves
+    empty_squares = board.unmarked_square_keys
+    print "Choose an empty square (#{joinor(empty_squares)}): "
+  end
+
+  def joinor(choices, delimiter: ',', word: 'or')
+    leading_numbers = "#{choices[0..-2].join("#{delimiter} ")}"
+
+    case choices.size
+    when 1 then"#{choices.first}"
+    when 2 then "#{choices.first} #{word} #{choices.last}"
+    else leading_numbers + "#{delimiter} #{word} #{choices.last}"
+    end
+  end
+
+  def display_result
+    clear_screen_and_display_board
+    case board.winning_marker
+    when human.mark
+      puts "You won!"
+    when computer.mark
+      puts "Computer won!"
+    else
+      puts "It's a tie."
+    end
+  end
+
+  def display_play_again_message
+    puts "Let's play again!"
+    puts
+  end
+
+  def display_goodbye_message
+    puts
+    puts 'Thanks for playing Tic Tac Toe!'
+  end
+end
+
+
+
+module MoveMethods
+  HUMAN_MARK = 'X'
+  COMPUTER_MARK = 'O'
+  FIRST_TO_MOVE = HUMAN_MARK
+
+  def player_moves
+    loop do
+      current_player_moves
+      break if board.someone_won? || board.full?
+      clear_screen_and_display_board if human_turn?
+    end
+  end
+
+  def current_player_moves
+    human_turn? ? human_moves : computer_moves
+    toggle_current_mark
+  end
+
+  def human_turn?
+    @current_mark == HUMAN_MARK
+  end
+
+  def toggle_current_mark
+    @current_mark = human_turn? ? COMPUTER_MARK : HUMAN_MARK
+  end
+
+  def human_moves
+    display_available_moves
+
+    choice = nil
+    loop do
+      choice = gets.chomp.to_i
+      break if board.unmarked_square_keys.include?(choice)
+      puts "Sorry, that's not a valid choice."
+    end
+
+    board[choice] = human.mark
+  end
+
+  def computer_moves
+    choice = board.unmarked_square_keys.sample
+    board[choice] = computer.mark
+  end
+end
+
+
+
 class Board # BOARD # BOARD # BOARD
   WINNING_LINES = [
     [1, 2, 3], [4, 5, 6], [7, 8, 9],  # horizontal
@@ -70,6 +179,8 @@ class Board # BOARD # BOARD # BOARD
   end
 end
 
+
+
 class Square # SQUARE # SQUARE # SQUARE
   INITIAL_MARK = ' '
 
@@ -92,6 +203,8 @@ class Square # SQUARE # SQUARE # SQUARE
   end
 end
 
+
+
 class Player # PLAYER # PLAYER # PLAYER
   attr_reader :mark
 
@@ -100,10 +213,10 @@ class Player # PLAYER # PLAYER # PLAYER
   end
 end
 
+
+
 class TTTGame # GAME GAME GAME GAME GAME
-  HUMAN_MARK = 'X'
-  COMPUTER_MARK = 'O'
-  FIRST_TO_MOVE = HUMAN_MARK
+  include DisplayMethods, MoveMethods
 
   attr_reader :board, :human, :computer
 
@@ -125,84 +238,11 @@ class TTTGame # GAME GAME GAME GAME GAME
   def main_game
     loop do
       display_board
-      player_move
+      player_moves
       display_result
       break unless play_again?
       reset
       display_play_again_message
-    end
-  end
-
-  def player_move
-    loop do
-      current_player_moves
-      break if board.someone_won? || board.full?
-      clear_screen_and_display_board if human_turn?
-    end
-  end
-
-  def display_welcome_message
-    clear_screen
-    puts 'Welcome to Tic Tac Toe!'
-  end
-
-  def clear_screen
-    system 'clear'
-  end
-
-  def display_board
-    puts "Your Mark: '#{human.mark}'  Computer's Mark:'#{computer.mark}'"
-    puts
-    board.draw
-    puts
-  end
-
-  def clear_screen_and_display_board
-    clear_screen
-    display_board
-  end
-
-  def current_player_moves
-    human_turn? ? human_moves : computer_moves
-    toggle_current_mark
-  end
-
-  def human_turn?
-    @current_mark == HUMAN_MARK
-  end
-
-  def toggle_current_mark
-    @current_mark = human_turn? ? COMPUTER_MARK : HUMAN_MARK
-  end
-
-  def human_moves
-    empty_squares = board.unmarked_square_keys.join(', ')
-    print "Choose an empty square (#{empty_squares}): "
-
-    choice = nil
-    loop do
-      choice = gets.chomp.to_i
-      break if board.unmarked_square_keys.include?(choice)
-      puts "Sorry, that's not a valid choice."
-    end
-
-    board[choice] = human.mark
-  end
-
-  def computer_moves
-    choice = board.unmarked_square_keys.sample
-    board[choice] = computer.mark
-  end
-
-  def display_result
-    clear_screen_and_display_board
-    case board.winning_marker
-    when human.mark
-      puts "You won!"
-    when computer.mark
-      puts "Computer won!"
-    else
-      puts "It's a tie."
     end
   end
 
@@ -223,16 +263,6 @@ class TTTGame # GAME GAME GAME GAME GAME
     board.reset
     @current_mark = FIRST_TO_MOVE
     clear_screen
-  end
-
-  def display_play_again_message
-    puts "Let's play again!"
-    puts
-  end
-
-  def display_goodbye_message
-    puts
-    puts 'Thanks for playing Tic Tac Toe!'
   end
 end
 
