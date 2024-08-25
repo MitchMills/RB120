@@ -26,12 +26,13 @@ module DisplayMethods
   end
 
   def joinor(choices, delimiter: ',', word: 'or')
-    leading_numbers = "#{choices[0..-2].join("#{delimiter} ")}"
-
     case choices.size
-    when 1 then"#{choices.first}"
-    when 2 then "#{choices.first} #{word} #{choices.last}"
-    else leading_numbers + "#{delimiter} #{word} #{choices.last}"
+    when 0 then ''
+    when 1 then choices.first.to_s
+    when 2 then choices.join(" #{word} ")
+    else
+      choices[-1] = "#{word} #{choices.last}"
+      choices.join("#{delimiter} ")
     end
   end
 
@@ -225,6 +226,7 @@ class TTTGame # GAME GAME GAME GAME GAME
     @human = Player.new(HUMAN_MARK)
     @computer = Player.new(COMPUTER_MARK)
     @current_mark = FIRST_TO_MOVE
+    @score = {human: 0, computer: 0, ties: 0}
   end
 
   def play
