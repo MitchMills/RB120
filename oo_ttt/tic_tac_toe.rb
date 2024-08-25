@@ -36,7 +36,7 @@ module DisplayMethods
     end
   end
 
-  def display_result
+  def display_game_result
     clear_screen_and_display_board
     case board.winning_marker
     when human.mark
@@ -239,19 +239,37 @@ class TTTGame # GAME GAME GAME GAME GAME
 
   def main_game
     loop do
-      display_board
-      player_moves
-      display_result
-      break unless play_again?
-      reset
-      display_play_again_message
+      display_match_intro
+
+      loop do
+        display_board
+        player_moves
+        display_game_result
+        break if match_over?
+        reset_game
+        display_play_again_message
+      end
+
+      display_match_result
+      break unless play_another_match?
+      reset_match
     end
   end
 
-  def play_again?
+  def match_over?
+
+  end
+
+  def reset_game
+    board.reset
+    @current_mark = FIRST_TO_MOVE
+    clear_screen
+  end
+
+  def play_another_match?
     answer = nil
     loop do
-      print "Would you like to play again? (y/n): "
+      print "Would you like to play another match? (y/n): "
       answer = gets.chomp.downcase
       break if %w(y n).include? answer
       puts "Sorry, you can only answer y or n."
@@ -259,12 +277,6 @@ class TTTGame # GAME GAME GAME GAME GAME
     end
 
     answer == 'y'
-  end
-
-  def reset
-    board.reset
-    @current_mark = FIRST_TO_MOVE
-    clear_screen
   end
 end
 
