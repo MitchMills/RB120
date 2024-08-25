@@ -226,7 +226,6 @@ class TTTGame # GAME GAME GAME GAME GAME
     @human = Player.new(HUMAN_MARK)
     @computer = Player.new(COMPUTER_MARK)
     @current_mark = FIRST_TO_MOVE
-    @score = {human: 0, computer: 0, ties: 0}
   end
 
   def play
@@ -239,20 +238,34 @@ class TTTGame # GAME GAME GAME GAME GAME
 
   def main_game
     loop do
-      display_match_intro
+      display_game_choices
+      game_type = game_choice
+      game_type = 'single game' ? single_game : match
 
-      loop do
-        display_board
-        player_moves
-        display_game_result
-        break if match_over?
-        reset_game
-        display_play_again_message
-      end
+
 
       display_match_result
       break unless play_another_match?
       reset_match
+    end
+
+  end
+
+  def single_game
+    loop do
+      display_board
+      player_moves
+      display_game_result
+      break if someone_won?
+      reset_game
+      display_play_again_message
+    end
+  end
+
+  def match
+    @match_score = {human: 0, computer: 0, ties: 0}
+    loop do
+      single_game
     end
   end
 
