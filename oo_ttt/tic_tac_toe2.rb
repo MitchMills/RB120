@@ -1,3 +1,9 @@
+module Formatable
+
+end
+
+
+
 module TTTDisplay
 
 end
@@ -7,6 +13,16 @@ module TTTMove
 end
 
 module ComputerStrategy
+
+end
+
+
+
+class Board
+
+end
+
+class Square
 
 end
 

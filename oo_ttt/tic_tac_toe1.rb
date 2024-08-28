@@ -66,7 +66,7 @@ module MoveMethods
   COMPUTER_MARK = 'O'
   FIRST_TO_MOVE = HUMAN_MARK
 
-  def player_moves
+  def players_move
     loop do
       current_player_moves
       break if board.someone_won? || board.full?
@@ -254,7 +254,7 @@ class TTTGame # GAME GAME GAME GAME GAME
   def single_game
     loop do
       display_board
-      player_moves
+      players_move
       display_game_result
       break if someone_won?
       reset_game
