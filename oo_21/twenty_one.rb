@@ -1,24 +1,16 @@
-module Hand
-  def display_hand
-    puts hand
-  end
-
-  def score
-    hand.map { |card| card.value }.sum
-  end
-end
-
 class Participant
-  include Hand
-
   attr_accessor :hand
 
   def initialize
-    @hand = []
+    @hand = Hand.new
   end
 
   def display_hand
-    puts hand
+    puts @hand.cards
+  end
+
+  def busted?
+    @hand.score > 21
   end
 end
 
@@ -36,10 +28,30 @@ class Dealer < Participant
   end
 
   def display_hand
-    puts hand.first
+    puts hand.cards.first
     puts "Face down card"
   end
 end
+
+
+
+class Hand
+  attr_reader :cards
+
+  def initialize
+    @cards = []
+    @score = 0
+  end
+
+  def <<(card)
+    @cards << card
+  end
+
+  def score
+    self.cards.map { |card| card.value }.sum
+  end
+end
+
 
 
 
@@ -76,7 +88,7 @@ class Deck
 end
 
 class Card
-  attr_accessor :rank
+  attr_reader :rank
 
   def initialize(rank, suit)
     @rank = rank
@@ -117,7 +129,7 @@ class Game
   def start
     deal_cards
     show_initial_cards
-    # player_turn
+    player_turn
     # dealer_turn
     # show_result
   end
@@ -128,10 +140,27 @@ class Game
 
   def show_initial_cards
     @player.display_hand
-    puts @player.score
+    puts @player.hand.score
     puts
     @dealer.display_hand
-    puts @dealer.score
+    puts @dealer.hand.score
+  end
+
+  def show_all_cards(participant)
+    participant.display_hand
+    puts participant.hand.score
+    puts
+  end
+
+  def player_turn
+    loop do
+      break puts "Busted!" if @player.busted?
+      puts "hit or stay?"
+      choice = gets.chomp
+      break unless choice == 'hit'
+      @deck.deal_one_card!(@player)
+      show_all_cards(@player)
+    end
   end
 end
 

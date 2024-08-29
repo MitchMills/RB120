@@ -1,13 +1,9 @@
-RANKS = ('2'..'10').to_a + %w(Jack Queen King Ace)
-
-SUITS = ['Spades', 'Hearts', 'Diamonds', 'Clubs']
-
-deck = []
-
-SUITS.each do |suit|
-  RANKS.each do |rank|
-    deck << "#{rank} of #{suit}"
+def value(rank)
+  case rank
+  when (2..10) then rank.to_i
+  when 'Ace' then 11
+  else 10
   end
 end
 
-p deck
+p value(3)
