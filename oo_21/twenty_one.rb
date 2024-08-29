@@ -2,8 +2,10 @@ class Participant
   attr_accessor :hand
 
   def initialize
-    @hand = Hand.new
+    @hand = []
   end
+
+
 end
 
 class Player < Participant
@@ -17,16 +19,6 @@ class Dealer < Participant
   def initialize
     super
     @name = 'The dealer'
-  end
-end
-
-class Hand
-  def initialize
-    @cards = []
-  end
-
-  def show_face_up_cards
-
   end
 end
 
@@ -53,15 +45,14 @@ class Deck
     (cards * number_of_decks).shuffle
   end
 
-  def deal_one_card(recipient)
-    recipient.hand << @cards.pop
+  def deal_opening_hands(player, dealer)
+    2.times do |_|
+      [player, dealer].each { |recipient| deal_one_card!(recipient) }
+    end
   end
 
-  def deal_opening_hands
-    2.times do |_|
-      deal_one_card(@player)
-      deal_one_card(@dealer)
-    end
+  def deal_one_card!(recipient)
+    recipient.hand << @cards.pop
   end
 end
 
@@ -105,14 +96,19 @@ class Game
   def start
     deal_cards
     show_initial_cards
-    player_turn
-    dealer_turn
-    show_result
+    # player_turn
+    # dealer_turn
+    # show_result
   end
 
   def deal_cards
-    @deck.deal_opening_hands
+    @deck.deal_opening_hands(@player, @dealer)
+  end
+
+  def show_initial_cards
+    puts @player.hand
+    puts @dealer.hand
   end
 end
 
-# Game.new.start
+Game.new.start
