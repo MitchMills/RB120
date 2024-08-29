@@ -87,6 +87,7 @@ class Deck
   end
 end
 
+
 class Card
   attr_reader :rank
 
@@ -118,7 +119,7 @@ end
 
 
 
-class Game
+class TwentyOne
 
   def initialize
     @player = Player.new
@@ -165,4 +166,4 @@ class Game
 end
 
 system 'clear'
-Game.new.start
+TwentyOne.new.start
