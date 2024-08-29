@@ -1,4 +1,6 @@
 class Participant
+  attr_accessor :hand
+
   def initialize
     @hand = Hand.new
   end
@@ -22,11 +24,17 @@ class Hand
   def initialize
     @cards = []
   end
+
+  def show_face_up_cards
+
+  end
 end
 
 
 
 class Deck
+  attr_accessor :cards
+
   SUITS = ['Spades', 'Hearts', 'Diamonds', 'Clubs']
   RANKS = ('2'..'10').to_a + %w(Jack Queen King Ace)
 
@@ -42,11 +50,18 @@ class Deck
         cards << Card.new(rank, suit)
       end
     end
-    deck
+    (cards * number_of_decks).shuffle
   end
 
-  def deal(number_of_cards = 1)
+  def deal_one_card(recipient)
+    recipient.hand << @cards.pop
+  end
 
+  def deal_opening_hands
+    2.times do |_|
+      deal_one_card(@player)
+      deal_one_card(@dealer)
+    end
   end
 end
 
@@ -70,10 +85,12 @@ class Card
   def ace_value
     11
   end
+
+  def to_s
+    "#{@rank} of #{@suit}"
+  end
 end
 
-deck = Deck.new
-p deck
 
 
 
@@ -82,6 +99,7 @@ class Game
   def initialize
     @player = Player.new
     @dealer = Dealer.new
+    @deck = Deck.new
   end
 
   def start
@@ -90,6 +108,10 @@ class Game
     player_turn
     dealer_turn
     show_result
+  end
+
+  def deal_cards
+    @deck.deal_opening_hands
   end
 end
 
