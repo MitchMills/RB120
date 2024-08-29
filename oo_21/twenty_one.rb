@@ -1,11 +1,25 @@
+module Hand
+  def display_hand
+    puts hand
+  end
+
+  def score
+    hand.map { |card| card.value }.sum
+  end
+end
+
 class Participant
+  include Hand
+
   attr_accessor :hand
 
   def initialize
     @hand = []
   end
 
-
+  def display_hand
+    puts hand
+  end
 end
 
 class Player < Participant
@@ -19,6 +33,11 @@ class Dealer < Participant
   def initialize
     super
     @name = 'The dealer'
+  end
+
+  def display_hand
+    puts hand.first
+    puts "Face down card"
   end
 end
 
@@ -57,16 +76,18 @@ class Deck
 end
 
 class Card
+  attr_accessor :rank
+
   def initialize(rank, suit)
     @rank = rank
     @suit = suit
-    @value = value(rank)
+    @value = value
   end
 
-  def value(rank)
-    if ('2'..'10').include?(rank)
-      rank.to_i
-    elsif rank == 'Ace'
+  def value
+    if ('2'..'10').include?(@rank)
+      @rank.to_i
+    elsif @rank == 'Ace'
       ace_value
     else
       10
@@ -106,9 +127,13 @@ class Game
   end
 
   def show_initial_cards
-    puts @player.hand
-    puts @dealer.hand
+    @player.display_hand
+    puts @player.score
+    puts
+    @dealer.display_hand
+    puts @dealer.score
   end
 end
 
+system 'clear'
 Game.new.start
