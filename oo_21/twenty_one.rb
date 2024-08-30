@@ -1,4 +1,6 @@
 class Participant
+  WINNING_TOTAL = 21
+
   attr_accessor :hand
 
   def initialize
@@ -6,11 +8,15 @@ class Participant
   end
 
   def display_hand
-    puts @hand.cards
+    puts hand.cards
+  end
+
+  def display_total
+    puts hand.total
   end
 
   def busted?
-    @hand.score > 21
+    hand.total > WINNING_TOTAL
   end
 end
 
@@ -22,6 +28,8 @@ class Player < Participant
 end
 
 class Dealer < Participant
+  LIMIT = 17
+
   def initialize
     super
     @name = 'The dealer'
@@ -30,25 +38,42 @@ class Dealer < Participant
   def display_hand
     puts hand.cards.first
     puts "Face down card"
+    puts hand.cards[2..-1]
+  end
+
+  def display_total
+    puts hand.total - hand[1].value
+  end
+
+  def display_revealed_hand
+    puts hand.cards
+  end
+
+  def display_revealed_total
+    puts hand.total
   end
 end
 
 
 
 class Hand
-  attr_reader :cards
+  attr_accessor :cards
 
   def initialize
     @cards = []
-    @score = 0
+    @total = 0
+  end
+
+  def [](index)
+    cards[index]
   end
 
   def <<(card)
-    @cards << card
+    cards << card
   end
 
-  def score
-    self.cards.map { |card| card.value }.sum
+  def total
+    cards.map { |card| card.value }.sum
   end
 end
 
@@ -56,10 +81,11 @@ end
 
 
 class Deck
-  attr_accessor :cards
-
   SUITS = ['Spades', 'Hearts', 'Diamonds', 'Clubs']
   RANKS = ('2'..'10').to_a + %w(Jack Queen King Ace)
+  OPENING_HAND_SIZE = 2
+
+  attr_accessor :cards
 
   def initialize(number_of_decks = 1)
     @cards = create(number_of_decks)
@@ -69,15 +95,14 @@ class Deck
     cards = []
 
     RANKS.each do |rank|
-      SUITS.each do |suit|
-        cards << Card.new(rank, suit)
-      end
+      SUITS.each { |suit| cards << Card.new(rank, suit) }
     end
+
     (cards * number_of_decks).shuffle
   end
 
   def deal_opening_hands(player, dealer)
-    2.times do |_|
+    OPENING_HAND_SIZE.times do |_|
       [player, dealer].each { |recipient| deal_one_card!(recipient) }
     end
   end
@@ -101,14 +126,10 @@ class Card
     if ('2'..'10').include?(@rank)
       @rank.to_i
     elsif @rank == 'Ace'
-      ace_value
+      11
     else
       10
     end
-  end
-
-  def ace_value
-    11
   end
 
   def to_s
@@ -120,7 +141,6 @@ end
 
 
 class TwentyOne
-
   def initialize
     @player = Player.new
     @dealer = Dealer.new
@@ -141,15 +161,15 @@ class TwentyOne
 
   def show_initial_cards
     @player.display_hand
-    puts @player.hand.score
+    puts @player.display_total
     puts
     @dealer.display_hand
-    puts @dealer.hand.score
+    puts @dealer.display_total
   end
 
   def show_all_cards(participant)
     participant.display_hand
-    puts participant.hand.score
+    puts participant.hand.total
     puts
   end
 
