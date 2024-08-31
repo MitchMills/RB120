@@ -18,11 +18,12 @@ class Participant
   end
 
   def display_hand
-    puts hand.cards
+    puts "#{self.name.upcase}'S CARDS:"
+    hand.cards.each { |card| puts "  #{card}"}
   end
 
   def display_total
-    puts hand.total
+    puts "TOTAL: #{hand.total}"
   end
 
   def busted?
@@ -31,6 +32,8 @@ class Participant
 end
 
 class Player < Participant
+  attr_reader :name
+
   def initialize
     super
     @name = 'Player'
@@ -38,19 +41,23 @@ class Player < Participant
 end
 
 class Dealer < Participant
+  attr_reader :name
+
   def initialize
     super
-    @name = 'The dealer'
+    @name = 'Dealer'
   end
 
   def display_hand
-    puts hand.cards.first
-    puts "Face down card"
-    puts hand.cards[2..-1]
+    visible_cards = hand.cards.map(&:itself)
+    visible_cards[1] = "Face down card"
+
+    puts "#{self.name.upcase}'S CARDS:"
+    visible_cards.each { |card| puts "  #{card}"}
   end
 
   def display_total
-    puts hand.total - hand[1].value
+    puts "VISIBLE TOTAL: #{hand[0].value + hand[2..-1].map(&:value).sum}"
   end
 
   def display_revealed_hand
