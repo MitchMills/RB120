@@ -11,10 +11,16 @@ end
 
 
 class Participant
+  include TwentyOneRules
+
   attr_accessor :hand
 
   def initialize
     @hand = Hand.new
+  end
+
+  def to_s
+    name
   end
 
   def display_hand
@@ -26,8 +32,20 @@ class Participant
     puts "TOTAL: #{hand.total}"
   end
 
+  def turn_over?
+    self.blackjack? || self.twenty_one? || self.busted?
+  end
+
+  def blackjack?
+    hand.number_of_cards == CARDS_IN_FIRST_DEAL && hand.total == TARGET_TOTAL
+  end
+
+  def twenty_one?
+    hand.number_of_cards > CARDS_IN_FIRST_DEAL && hand.total == TARGET_TOTAL
+  end
+
   def busted?
-    hand.total > TwentyOne::TARGET_TOTAL
+    hand.total > TARGET_TOTAL
   end
 end
 
@@ -49,7 +67,7 @@ class Dealer < Participant
   end
 
   def display_hand
-    visible_cards = hand.cards.map(&:itself)
+    visible_cards = hand.cards.map(&:itself) # necessary?
     visible_cards[1] = "Face down card"
 
     puts "#{self.name.upcase}'S CARDS:"
@@ -61,11 +79,11 @@ class Dealer < Participant
   end
 
   def display_revealed_hand
-    puts hand.cards
+    Participant.display_hand # works?
   end
 
   def display_revealed_total
-    puts hand.total
+    Participant.display_total # works?
   end
 end
 
@@ -77,6 +95,10 @@ class Hand
   def initialize
     @cards = []
     @total = 0
+  end
+
+  def number_of_cards
+    cards.size
   end
 
   def [](index)
@@ -93,7 +115,7 @@ class Hand
   end
 
   def adjust_for_aces(total)
-    number_of_aces = cards.map { |card| card.rank }.count('Ace')
+    number_of_aces = cards.count { |card| card.rank == 'Ace'}
     number_of_aces.times { total -= 10 if total > TwentyOneRules::TARGET_TOTAL}
     total
   end
@@ -113,17 +135,17 @@ class Deck
   attr_accessor :cards
 
   def initialize
-    @cards = create_and_shuffle(DECKS_IN_GAME)
+    @cards = reshuffle
   end
 
-  def create_and_shuffle(number_of_decks)
+  def create_one_deck
     cards = []
 
     RANKS.each do |rank|
       SUITS.each { |suit| cards << Card.new(rank, suit) }
     end
 
-    (cards * number_of_decks).shuffle
+    cards
   end
 
   def deal_opening_hands(player, dealer)
@@ -137,7 +159,7 @@ class Deck
   end
 
   def reshuffle
-
+    cards = (create_one_deck * DECKS_IN_GAME).shuffle
   end
 
   def time_to_reshuffle?
@@ -176,6 +198,8 @@ end
 class TwentyOne
   include TwentyOneRules
 
+  attr_reader :player, :dealer, :deck
+
   def initialize
     @player = Player.new
     @dealer = Dealer.new
@@ -191,32 +215,65 @@ class TwentyOne
   end
 
   def deal_cards
-    @deck.deal_opening_hands(@player, @dealer)
+    deck.deal_opening_hands(player, dealer)
   end
 
   def show_initial_cards
-    @player.display_hand
-    puts @player.display_total
+    player.display_hand
+    puts player.display_total
     puts
-    @dealer.display_hand
-    puts @dealer.display_total
+    dealer.display_hand
+    puts dealer.display_total
   end
 
   def show_all_cards(participant)
     participant.display_hand
-    puts participant.hand.total
+    puts participant.display_total
     puts
   end
 
   def player_turn
     loop do
-      break puts "Busted!" if @player.busted?
-      puts "hit or stay?"
-      choice = gets.chomp
-      break unless choice == 'hit' # fix to only allow h or s
-      @deck.deal_one_card!(@player)
-      show_all_cards(@player)
+      break display_turn_over(player) if player.turn_over? # NOT WORKING
+
+      choice = nil
+      loop do
+        print "Do you want to hit or stay? (enter 'h' or 's'): "
+        choice = gets.chomp.downcase
+        break if %w(h s).include?(choice)
+        puts "Sorry, you must enter 'h', or 's'."
+        puts
+      end
+      break unless choice == 'h'
+      puts
+      @deck.deal_one_card!(player)
+      show_all_cards(player)
     end
+  end
+
+  def display_turn_over(participant)
+    if participant.blackjack?
+      display_blackjack(participant)
+    elsif participant.twenty_one?
+      display_twenty_one(participant)
+    elsif participant.busted?
+      display_busted(participant)
+    end
+  end
+
+  def display_blackjack(participant)
+    puts "#{participant} has a blackjack!"
+    puts
+  end
+
+  def display_twenty_one(participant)
+    puts "#{participant}'s total is 21!"
+    puts
+  end
+
+  def display_busted(participant)
+    puts "#{participant} has busted!"
+    puts
   end
 end
 
