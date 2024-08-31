@@ -1,6 +1,16 @@
-class Participant
-  WINNING_TOTAL = 21
+module TwentyOneRules
+  TARGET_TOTAL = 21
+  DEALER_STAY_TOTAL = 17
+  CARDS_IN_FIRST_DEAL = 2
 
+  DECKS_IN_GAME = 1
+  RESHUFFLE_TRIGGER = 0.25
+end
+
+
+
+
+class Participant
   attr_accessor :hand
 
   def initialize
@@ -16,20 +26,18 @@ class Participant
   end
 
   def busted?
-    hand.total > WINNING_TOTAL
+    hand.total > TwentyOne::TARGET_TOTAL
   end
 end
 
 class Player < Participant
   def initialize
     super
-    @name = 'You'
+    @name = 'Player'
   end
 end
 
 class Dealer < Participant
-  LIMIT = 17
-
   def initialize
     super
     @name = 'The dealer'
@@ -57,7 +65,7 @@ end
 
 
 class Hand
-  attr_accessor :cards
+  attr_accessor :cards, :total
 
   def initialize
     @cards = []
@@ -73,7 +81,14 @@ class Hand
   end
 
   def total
-    cards.map { |card| card.value }.sum
+    raw_total = cards.map { |card| card.value }.sum
+    adjust_for_aces(raw_total)
+  end
+
+  def adjust_for_aces(total)
+    number_of_aces = cards.map { |card| card.rank }.count('Ace')
+    number_of_aces.times { total -= 10 if total > TwentyOneRules::TARGET_TOTAL}
+    total
   end
 end
 
@@ -81,17 +96,20 @@ end
 
 
 class Deck
-  SUITS = ['Spades', 'Hearts', 'Diamonds', 'Clubs']
+  include TwentyOneRules
+
+  SUITS = %w(Spades Hearts Diamonds Clubs)
   RANKS = ('2'..'10').to_a + %w(Jack Queen King Ace)
-  OPENING_HAND_SIZE = 2
+  CARDS_IN_ONE_DECK = SUITS.size * RANKS.size
+  CARDS_IN_GAME = CARDS_IN_ONE_DECK * DECKS_IN_GAME
 
   attr_accessor :cards
 
-  def initialize(number_of_decks = 1)
-    @cards = create(number_of_decks)
+  def initialize
+    @cards = create_and_shuffle(DECKS_IN_GAME)
   end
 
-  def create(number_of_decks)
+  def create_and_shuffle(number_of_decks)
     cards = []
 
     RANKS.each do |rank|
@@ -102,7 +120,7 @@ class Deck
   end
 
   def deal_opening_hands(player, dealer)
-    OPENING_HAND_SIZE.times do |_|
+    CARDS_IN_FIRST_DEAL.times do |_|
       [player, dealer].each { |recipient| deal_one_card!(recipient) }
     end
   end
@@ -110,22 +128,30 @@ class Deck
   def deal_one_card!(recipient)
     recipient.hand << @cards.pop
   end
+
+  def reshuffle
+
+  end
+
+  def time_to_reshuffle?
+    cards.size < CARDS_IN_GAME * RESHUFFLE_TRIGGER
+  end
 end
 
 
 class Card
-  attr_reader :rank
+  attr_reader :rank, :suit, :value
 
   def initialize(rank, suit)
     @rank = rank
     @suit = suit
-    @value = value
+    @value = calculate_value
   end
 
-  def value
-    if ('2'..'10').include?(@rank)
-      @rank.to_i
-    elsif @rank == 'Ace'
+  def calculate_value
+    if ('2'..'10').include?(rank)
+      rank.to_i
+    elsif rank == 'Ace'
       11
     else
       10
@@ -133,7 +159,7 @@ class Card
   end
 
   def to_s
-    "#{@rank} of #{@suit}"
+    "#{rank} of #{suit}"
   end
 end
 
@@ -141,6 +167,8 @@ end
 
 
 class TwentyOne
+  include TwentyOneRules
+
   def initialize
     @player = Player.new
     @dealer = Dealer.new
@@ -178,7 +206,7 @@ class TwentyOne
       break puts "Busted!" if @player.busted?
       puts "hit or stay?"
       choice = gets.chomp
-      break unless choice == 'hit'
+      break unless choice == 'hit' # fix to only allow h or s
       @deck.deal_one_card!(@player)
       show_all_cards(@player)
     end
