@@ -5,6 +5,22 @@ module TwentyOneRules
 
   DECKS_IN_GAME = 1
   RESHUFFLE_TRIGGER = 0.25
+
+  def turn_over?
+    blackjack? || twenty_one? || busted?
+  end
+
+  def blackjack?
+    hand.number_of_cards == CARDS_IN_FIRST_DEAL && hand.total == TARGET_TOTAL
+  end
+
+  def twenty_one?
+    hand.number_of_cards > CARDS_IN_FIRST_DEAL && hand.total == TARGET_TOTAL
+  end
+
+  def busted?
+    hand.total > TARGET_TOTAL
+  end
 end
 
 
@@ -32,20 +48,8 @@ class Participant
     puts "TOTAL: #{hand.total}"
   end
 
-  def turn_over?
-    self.blackjack? || self.twenty_one? || self.busted?
-  end
-
-  def blackjack?
-    hand.number_of_cards == CARDS_IN_FIRST_DEAL && hand.total == TARGET_TOTAL
-  end
-
-  def twenty_one?
-    hand.number_of_cards > CARDS_IN_FIRST_DEAL && hand.total == TARGET_TOTAL
-  end
-
-  def busted?
-    hand.total > TARGET_TOTAL
+  def hit!(card)
+    hand << card
   end
 end
 
@@ -140,26 +144,24 @@ class Deck
 
   def create_one_deck
     cards = []
-
     RANKS.each do |rank|
       SUITS.each { |suit| cards << Card.new(rank, suit) }
     end
-
     cards
-  end
-
-  def deal_opening_hands(player, dealer)
-    CARDS_IN_FIRST_DEAL.times do |_|
-      [player, dealer].each { |recipient| deal_one_card!(recipient) }
-    end
-  end
-
-  def deal_one_card!(recipient)
-    recipient.hand << @cards.pop
   end
 
   def reshuffle
     cards = (create_one_deck * DECKS_IN_GAME).shuffle
+  end
+
+  def deal_opening_hands(player, dealer)
+    CARDS_IN_FIRST_DEAL.times do |_|
+      [player, dealer].each { |recipient| recipient.hit!(deal_one_card!) }
+    end
+  end
+
+  def deal_one_card!
+    @cards.pop
   end
 
   def time_to_reshuffle?
@@ -234,7 +236,7 @@ class TwentyOne
 
   def player_turn
     loop do
-      break display_turn_over(player) if player.turn_over? # NOT WORKING
+      break display_turn_over(player) if player.turn_over?
 
       choice = nil
       loop do
@@ -245,8 +247,9 @@ class TwentyOne
         puts
       end
       break unless choice == 'h'
+
       puts
-      @deck.deal_one_card!(player)
+      player.hit!(deck.deal_one_card!)
       show_all_cards(player)
     end
   end
