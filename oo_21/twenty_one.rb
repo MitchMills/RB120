@@ -101,6 +101,10 @@ class Dealer < Participant
   def reshuffle_deck
     deck.reshuffle
   end
+
+  def time_to_reshuffle?
+    deck.cards.size < Deck::CARDS_IN_GAME * RESHUFFLE_TRIGGER
+  end
 end
 
 
@@ -163,10 +167,6 @@ class Deck
   def reshuffle
     cards = (create_one_deck * DECKS_IN_GAME).shuffle
   end
-
-  def time_to_reshuffle?
-    cards.size < CARDS_IN_GAME * RESHUFFLE_TRIGGER
-  end
 end
 
 
@@ -210,7 +210,7 @@ class TwentyOne
   def start
     deal_cards
     show_initial_cards
-    player_turn
+    # player_turn
     # dealer_turn
     # show_result
   end
