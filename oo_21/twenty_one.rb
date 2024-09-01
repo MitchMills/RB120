@@ -39,12 +39,12 @@ class Participant
     name
   end
 
-  def display_hand
+  def display_hand(hidden_card: false)
     puts "#{self.name.upcase}'S CARDS:"
     hand.cards.each { |card| puts "  #{card}"}
   end
 
-  def display_total
+  def display_total(hidden_card: false)
     puts "TOTAL: #{hand.total}"
   end
 
@@ -52,6 +52,7 @@ class Participant
     hand << card
   end
 end
+
 
 class Player < Participant
   attr_reader :name
@@ -62,32 +63,43 @@ class Player < Participant
   end
 end
 
+
 class Dealer < Participant
   attr_reader :name
+  attr_accessor :deck
 
   def initialize
     super
     @name = 'Dealer'
+    @deck = Deck.new
   end
 
-  def display_hand
-    visible_cards = hand.cards.map(&:itself) # necessary?
-    visible_cards[1] = "Face down card"
+  def display_hand(hidden_card: false)
+    hand.cards[1] = "Face down card" if hidden_card
 
     puts "#{self.name.upcase}'S CARDS:"
-    visible_cards.each { |card| puts "  #{card}"}
+    hand.cards.each { |card| puts "  #{card}"}
   end
 
-  def display_total
-    puts "VISIBLE TOTAL: #{hand[0].value + hand[2..-1].map(&:value).sum}"
+  def display_total(hidden_card: false)
+    title = hidden_card ? 'VISIBLE TOTAL:' : 'TOTAL:'
+    total = hidden_card ? hand[0].value + hand[2..-1].map(&:value).sum : hand.total
+
+    puts "#{title} #{total}"
   end
 
-  def display_revealed_hand
-    Participant.display_hand # works?
+  def deal_opening_hands!(player)
+    CARDS_IN_FIRST_DEAL.times do |_|
+      [player, self].each { |recipient| recipient.hit!(deal_one_card!) }
+    end
   end
 
-  def display_revealed_total
-    Participant.display_total # works?
+  def deal_one_card!
+    deck.cards.pop
+  end
+
+  def reshuffle_deck
+    deck.reshuffle
   end
 end
 
@@ -143,25 +155,13 @@ class Deck
   end
 
   def create_one_deck
-    cards = []
-    RANKS.each do |rank|
+    RANKS.each_with_object([]) do |rank, cards|
       SUITS.each { |suit| cards << Card.new(rank, suit) }
     end
-    cards
   end
 
   def reshuffle
     cards = (create_one_deck * DECKS_IN_GAME).shuffle
-  end
-
-  def deal_opening_hands(player, dealer)
-    CARDS_IN_FIRST_DEAL.times do |_|
-      [player, dealer].each { |recipient| recipient.hit!(deal_one_card!) }
-    end
-  end
-
-  def deal_one_card!
-    @cards.pop
   end
 
   def time_to_reshuffle?
@@ -200,12 +200,11 @@ end
 class TwentyOne
   include TwentyOneRules
 
-  attr_reader :player, :dealer, :deck
+  attr_reader :player, :dealer
 
   def initialize
     @player = Player.new
     @dealer = Dealer.new
-    @deck = Deck.new
   end
 
   def start
@@ -217,15 +216,15 @@ class TwentyOne
   end
 
   def deal_cards
-    deck.deal_opening_hands(player, dealer)
+    dealer.deal_opening_hands!(player)
   end
 
   def show_initial_cards
-    player.display_hand
-    puts player.display_total
-    puts
-    dealer.display_hand
-    puts dealer.display_total
+    [player, dealer].each do |participant|
+      participant.display_hand(hidden_card: participant == dealer)
+      participant.display_total(hidden_card: participant == dealer)
+      puts
+    end
   end
 
   def show_all_cards(participant)
@@ -249,7 +248,7 @@ class TwentyOne
       break unless choice == 'h'
 
       puts
-      player.hit!(deck.deal_one_card!)
+      player.hit!(dealer.deal_one_card!)
       show_all_cards(player)
     end
   end
