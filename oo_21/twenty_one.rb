@@ -6,7 +6,7 @@ module TwentyOneRules
   DECKS_IN_GAME = 1
   RESHUFFLE_TRIGGER = 0.25
 
-  def turn_over?
+  def turn_finished?
     blackjack? || twenty_one? || busted?
   end
 
@@ -75,10 +75,11 @@ class Dealer < Participant
   end
 
   def display_hand(hidden_card: false)
-    hand.cards[1] = "Face down card" if hidden_card
+    displayed_hand = hand.cards.map(&:itself)
+    displayed_hand[1] = "Face down card" if hidden_card
 
     puts "#{self.name.upcase}'S CARDS:"
-    hand.cards.each { |card| puts "  #{card}"}
+    displayed_hand.each { |card| puts "  #{card}"}
   end
 
   def display_total(hidden_card: false)
@@ -96,6 +97,10 @@ class Dealer < Participant
 
   def deal_one_card!
     deck.cards.pop
+  end
+
+  def stay?
+    hand.total >= DEALER_STAY_TOTAL
   end
 
   def reshuffle_deck
@@ -210,8 +215,8 @@ class TwentyOne
   def start
     deal_cards
     show_initial_cards
-    # player_turn
-    # dealer_turn
+    player_turn
+    dealer_turn
     # show_result
   end
 
@@ -229,13 +234,13 @@ class TwentyOne
 
   def show_all_cards(participant)
     participant.display_hand
-    puts participant.display_total
+    participant.display_total
     puts
   end
 
   def player_turn
     loop do
-      break display_turn_over(player) if player.turn_over?
+      break display_turn_finished(player) if player.turn_finished?
 
       choice = nil
       loop do
@@ -245,7 +250,7 @@ class TwentyOne
         puts "Sorry, you must enter 'h', or 's'."
         puts
       end
-      break unless choice == 'h'
+      break display_stayed(player) unless choice == 'h'
 
       puts
       player.hit!(dealer.deal_one_card!)
@@ -253,13 +258,30 @@ class TwentyOne
     end
   end
 
-  def display_turn_over(participant)
+
+  def dealer_turn
+    loop do
+      show_all_cards(dealer)
+      break display_turn_finished(dealer) if dealer.turn_finished?
+      dealer.hit!(dealer.deal_one_card!)
+    end
+    show_all_cards(dealer)
+    display_stayed(dealer)
+  end
+
+  def display_stayed(participant)
+    puts "#{participant} has chosen to stay."
+  end
+
+  def display_turn_finished(participant)
     if participant.blackjack?
       display_blackjack(participant)
     elsif participant.twenty_one?
       display_twenty_one(participant)
     elsif participant.busted?
       display_busted(participant)
+    elsif dealer.stay?
+      display_stayed(dealer)
     end
   end
 
