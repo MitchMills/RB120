@@ -75,16 +75,16 @@ class Dealer < Participant
   end
 
   def display_hand(hidden_card: false)
-    displayed_hand = hand.cards.map(&:itself)
-    displayed_hand[1] = "Face down card" if hidden_card
-
     puts "#{self.name.upcase}'S CARDS:"
-    displayed_hand.each { |card| puts "  #{card}"}
+    hand.cards.each_with_index do |card, index|
+      puts hidden_card && index == 1 ? "  Face-down card" : "  #{card}"
+    end
   end
 
   def display_total(hidden_card: false)
     title = hidden_card ? 'VISIBLE TOTAL:' : 'TOTAL:'
-    total = hidden_card ? hand[0].value + hand[2..-1].map(&:value).sum : hand.total
+    visible_total = ([hand[0]] + hand[2..-1]).map(&:value).sum
+    total = hidden_card ? visible_total : hand.total
 
     puts "#{title} #{total}"
   end
@@ -216,7 +216,7 @@ class TwentyOne
     deal_cards
     show_initial_cards
     player_turn
-    dealer_turn
+    # dealer_turn
     # show_result
   end
 
