@@ -41,11 +41,16 @@ class Participant
 
   def display_hand(hidden_card: false)
     puts "#{self.name.upcase}'S CARDS:"
-    hand.cards.each { |card| puts "  #{card}"}
+    hand.cards.each_with_index do |card, index|
+      puts hidden_card && index == 1 ? "  Face-down card" : "  #{card}"
+    end
   end
 
   def display_total(hidden_card: false)
-    puts "TOTAL: #{hand.total}"
+    label = hidden_card ? 'VISIBLE TOTAL' : 'TOTAL'
+    total = hidden_card ? hand.visible_total : hand.total
+
+    puts "#{label}: #{total}"
   end
 
   def hit!(card)
@@ -74,21 +79,6 @@ class Dealer < Participant
     @deck = Deck.new
   end
 
-  def display_hand(hidden_card: false)
-    puts "#{self.name.upcase}'S CARDS:"
-    hand.cards.each_with_index do |card, index|
-      puts hidden_card && index == 1 ? "  Face-down card" : "  #{card}"
-    end
-  end
-
-  def display_total(hidden_card: false)
-    title = hidden_card ? 'VISIBLE TOTAL:' : 'TOTAL:'
-    visible_total = ([hand[0]] + hand[2..-1]).map(&:value).sum
-    total = hidden_card ? visible_total : hand.total
-
-    puts "#{title} #{total}"
-  end
-
   def deal_opening_hands!(player)
     CARDS_IN_FIRST_DEAL.times do |_|
       [player, self].each { |recipient| recipient.hit!(deal_one_card!) }
@@ -96,7 +86,7 @@ class Dealer < Participant
   end
 
   def deal_one_card!
-    deck.cards.pop
+    deck.pop
   end
 
   def stay?
@@ -108,14 +98,15 @@ class Dealer < Participant
   end
 
   def time_to_reshuffle?
-    deck.cards.size < Deck::CARDS_IN_GAME * RESHUFFLE_TRIGGER
+    deck.number_of_cards < Deck::CARDS_IN_GAME * RESHUFFLE_TRIGGER
   end
 end
 
 
 
 class Hand
-  attr_accessor :cards, :total
+  attr_reader :total
+  attr_accessor :cards
 
   def initialize
     @cards = []
@@ -137,6 +128,10 @@ class Hand
   def total
     raw_total = cards.map { |card| card.value }.sum
     adjust_for_aces(raw_total)
+  end
+
+  def visible_total
+    self[0].value
   end
 
   def adjust_for_aces(total)
@@ -167,6 +162,14 @@ class Deck
     RANKS.each_with_object([]) do |rank, cards|
       SUITS.each { |suit| cards << Card.new(rank, suit) }
     end
+  end
+
+  def number_of_cards
+    cards.size
+  end
+
+  def pop
+    cards.pop
   end
 
   def reshuffle
