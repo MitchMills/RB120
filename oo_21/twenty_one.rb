@@ -1,4 +1,4 @@
-module TwentyOneRules
+module GameSettings
   TARGET_TOTAL = 21
   DEALER_STAY_TOTAL = 17
   CARDS_IN_FIRST_DEAL = 2
@@ -37,7 +37,7 @@ end
 
 
 class Participant
-  include TwentyOneRules
+  include GameSettings
 
   attr_accessor :hand
 
@@ -49,17 +49,17 @@ class Participant
     name
   end
 
-  def display_hand(hidden_card: false)
+  def display_hand(facedown_card: false)
     participant = self.class == Player ? "YOUR" : "THE DEALER'S"
     puts "#{participant} HAND:"
     hand.cards.each_with_index do |card, index|
-      puts hidden_card && index == 1 ? "  Face-down card" : "  #{card}"
+      puts facedown_card && index == 1 ? "  Face-down card" : "  #{card}"
     end
   end
 
-  def display_total(hidden_card: false)
-    label = hidden_card ? 'VISIBLE TOTAL' : 'TOTAL'
-    total = hidden_card ? hand.visible_total : hand.total
+  def display_total(facedown_card: false)
+    label = facedown_card ? 'VISIBLE TOTAL' : 'TOTAL'
+    total = facedown_card ? hand.visible_total : hand.total
 
     puts "#{label}: #{total}"
   end
@@ -75,7 +75,11 @@ class Player < Participant
 
   def initialize
     super
-    @name = 'Player'
+    @name = enter_name
+  end
+
+  def enter_name
+    'Mitch'
   end
 end
 
@@ -116,12 +120,10 @@ end
 
 
 class Hand
-  attr_reader :total
   attr_accessor :cards
 
   def initialize
     @cards = []
-    @total = 0
   end
 
   def number_of_cards
@@ -147,7 +149,7 @@ class Hand
 
   def adjust_for_aces(total)
     number_of_aces = cards.count { |card| card.rank == 'Ace'}
-    number_of_aces.times { total -= 10 if total > TwentyOneRules::TARGET_TOTAL}
+    number_of_aces.times { total -= 10 if total > GameSettings::TARGET_TOTAL}
     total
   end
 end
@@ -156,7 +158,7 @@ end
 
 
 class Deck
-  include TwentyOneRules
+  include GameSettings
 
   SUITS = %w(Spades Hearts Diamonds Clubs)
   RANKS = ('2'..'10').to_a + %w(Jack Queen King Ace)
@@ -174,8 +176,8 @@ class Deck
   end
 
   def create_one_deck
-    RANKS.each_with_object([]) do |rank, cards|
-      SUITS.each { |suit| cards << Card.new(rank, suit) }
+    RANKS.each_with_object([]) do |rank, deck|
+      SUITS.each { |suit| deck << Card.new(rank, suit) }
     end
   end
 
@@ -217,7 +219,7 @@ end
 
 
 class TwentyOne
-  include TwentyOneRules, Formatting
+  include GameSettings, Formatting
 
   attr_reader :player, :dealer
 
@@ -247,7 +249,7 @@ class TwentyOne
   def deal_opening_hands
     dealer.deal_opening_hands!(player)
     narrate_opening_deal
-    display_hands(hidden_card: true)
+    display_hands(facedown_card: true)
   end
 
   def narrate_opening_deal
@@ -264,11 +266,11 @@ class TwentyOne
     blank_line
   end
 
-  def display_hands(hidden_card: false)
+  def display_hands(facedown_card: false)
     [dealer, player].each do |participant|
-      hide_card = hidden_card && participant == dealer
-      participant.display_hand(hidden_card: hide_card)
-      participant.display_total(hidden_card: hide_card)
+      hide_card = facedown_card && participant == dealer
+      participant.display_hand(facedown_card: hide_card)
+      participant.display_total(facedown_card: hide_card)
       blank_line
     end
   end
@@ -285,11 +287,12 @@ class TwentyOne
         puts "Sorry, you must enter 'h', or 's'."
         blank_line
       end
+
       break display_stayed(player) if choice == 's'
 
       clear_screen
-      display_hit(player)
-      display_hands(hidden_card: true)
+      hit_and_display_card(player)
+      display_hands(facedown_card: true)
     end
   end
 
@@ -309,7 +312,7 @@ class TwentyOne
     puts "#{subject} chose to stay."
   end
 
-  def display_hit(participant)
+  def hit_and_display_card(participant)
     participant.hit!(dealer.deal_one_card!)
 
     subject = participant == player ? 'You' : 'The dealer'
@@ -318,7 +321,7 @@ class TwentyOne
     blank_line
   end
 
-def display_turn_finished(participant)
+  def display_turn_finished(participant)
     if participant.blackjack?
       display_blackjack(participant)
     elsif participant.twenty_one?
