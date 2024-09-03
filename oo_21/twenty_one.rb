@@ -86,7 +86,7 @@ class Dealer < Participant
   end
 
   def deal_one_card!
-    deck.pop
+    deck.remove_one_card!
   end
 
   def stay?
@@ -158,6 +158,10 @@ class Deck
     @cards = reshuffle
   end
 
+  def reshuffle
+    cards = (create_one_deck * DECKS_IN_GAME).shuffle
+  end
+
   def create_one_deck
     RANKS.each_with_object([]) do |rank, cards|
       SUITS.each { |suit| cards << Card.new(rank, suit) }
@@ -168,12 +172,8 @@ class Deck
     cards.size
   end
 
-  def pop
+  def remove_one_card!
     cards.pop
-  end
-
-  def reshuffle
-    cards = (create_one_deck * DECKS_IN_GAME).shuffle
   end
 end
 
@@ -216,29 +216,31 @@ class TwentyOne
   end
 
   def start
-    deal_cards
-    show_initial_cards
+    deal_opening_hands
+    show_visible_cards
     player_turn
     # dealer_turn
     # show_result
   end
 
-  def deal_cards
+  def deal_opening_hands
     dealer.deal_opening_hands!(player)
   end
 
-  def show_initial_cards
-    [player, dealer].each do |participant|
+  def show_visible_cards
+    [dealer, player].each do |participant|
       participant.display_hand(hidden_card: participant == dealer)
       participant.display_total(hidden_card: participant == dealer)
       puts
     end
   end
 
-  def show_all_cards(participant)
-    participant.display_hand
-    participant.display_total
-    puts
+  def show_all_cards
+    [dealer, player].each do |participant|
+      participant.display_hand
+      participant.display_total
+      puts
+    end
   end
 
   def player_turn
@@ -253,11 +255,11 @@ class TwentyOne
         puts "Sorry, you must enter 'h', or 's'."
         puts
       end
-      break display_stayed(player) unless choice == 'h'
+      break display_stayed(player) if choice == 's'
 
-      puts
-      player.hit!(dealer.deal_one_card!)
-      show_all_cards(player)
+      system 'clear'
+      display_hit(player)
+      show_visible_cards
     end
   end
 
@@ -276,15 +278,21 @@ class TwentyOne
     puts "#{participant} has chosen to stay."
   end
 
-  def display_turn_finished(participant)
+  def display_hit(participant)
+    puts "#{participant} has chosen to hit."
+    card = dealer.deal_one_card!
+    puts "#{participant} gets the #{card}."
+    player.hit!(card)
+    puts
+  end
+
+def display_turn_finished(participant)
     if participant.blackjack?
       display_blackjack(participant)
     elsif participant.twenty_one?
       display_twenty_one(participant)
     elsif participant.busted?
       display_busted(participant)
-    elsif dealer.stay?
-      display_stayed(dealer)
     end
   end
 
