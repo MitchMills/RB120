@@ -23,6 +23,16 @@ module TwentyOneRules
   end
 end
 
+module Formatting
+  def clear_screen
+    system 'clear'
+  end
+
+  def blank_line(number = 1)
+    number.times { puts }
+  end
+end
+
 
 
 
@@ -40,7 +50,8 @@ class Participant
   end
 
   def display_hand(hidden_card: false)
-    puts "#{self.name.upcase}'S CARDS:"
+    participant = self.class == Player ? "YOUR" : "THE DEALER'S"
+    puts "#{participant} HAND:"
     hand.cards.each_with_index do |card, index|
       puts hidden_card && index == 1 ? "  Face-down card" : "  #{card}"
     end
@@ -206,40 +217,59 @@ end
 
 
 class TwentyOne
-  include TwentyOneRules
+  include TwentyOneRules, Formatting
 
   attr_reader :player, :dealer
 
   def initialize
+    clear_screen
     @player = Player.new
     @dealer = Dealer.new
   end
 
   def start
+    intro
     deal_opening_hands
-    show_visible_cards
     player_turn
     # dealer_turn
     # show_result
   end
 
+
+
+  def intro
+    puts "Welcome to Twenty-One!"
+    print "Enter any key to start: "
+    gets
+    blank_line
+  end
+
   def deal_opening_hands
     dealer.deal_opening_hands!(player)
+    narrate_opening_deal
+    display_hands(hidden_card: true)
   end
 
-  def show_visible_cards
-    [dealer, player].each do |participant|
-      participant.display_hand(hidden_card: participant == dealer)
-      participant.display_total(hidden_card: participant == dealer)
-      puts
+  def narrate_opening_deal
+    puts "Here's the deal:"
+    opening_deal = [0, 1].flat_map do |index|
+      [player.hand[index], dealer.hand[index]]
     end
+
+    opening_deal.each_with_index do |card, index|
+      subject_verb = index.even? ? '  You get' : '    The dealer gets'
+      dealt_card = index == 3 ? 'a face-down card' : "the #{card}"
+      puts "#{subject_verb} #{dealt_card}."
+    end
+    blank_line
   end
 
-  def show_all_cards
+  def display_hands(hidden_card: false)
     [dealer, player].each do |participant|
-      participant.display_hand
-      participant.display_total
-      puts
+      hide_card = hidden_card && participant == dealer
+      participant.display_hand(hidden_card: hide_card)
+      participant.display_total(hidden_card: hide_card)
+      blank_line
     end
   end
 
@@ -253,13 +283,13 @@ class TwentyOne
         choice = gets.chomp.downcase
         break if %w(h s).include?(choice)
         puts "Sorry, you must enter 'h', or 's'."
-        puts
+        blank_line
       end
       break display_stayed(player) if choice == 's'
 
-      system 'clear'
+      clear_screen
       display_hit(player)
-      show_visible_cards
+      display_hands(hidden_card: true)
     end
   end
 
@@ -270,20 +300,22 @@ class TwentyOne
       break display_turn_finished(dealer) if dealer.turn_finished?
       dealer.hit!(dealer.deal_one_card!)
     end
-    show_all_cards(dealer)
+    display_hands
     display_stayed(dealer)
   end
 
   def display_stayed(participant)
-    puts "#{participant} has chosen to stay."
+    subject = participant == player ? 'You' : 'The dealer'
+    puts "#{subject} chose to stay."
   end
 
   def display_hit(participant)
-    puts "#{participant} has chosen to hit."
-    card = dealer.deal_one_card!
-    puts "#{participant} gets the #{card}."
-    player.hit!(card)
-    puts
+    participant.hit!(dealer.deal_one_card!)
+
+    subject = participant == player ? 'You' : 'The dealer'
+    puts "#{subject} chose to hit."
+    puts "#{subject} got the #{participant.hand[-1]}."
+    blank_line
   end
 
 def display_turn_finished(participant)
@@ -312,5 +344,4 @@ def display_turn_finished(participant)
   end
 end
 
-system 'clear'
 TwentyOne.new.start
