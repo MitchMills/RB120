@@ -1,10 +1,15 @@
 module GameSettings
-  TARGET_TOTAL = 21
-  DEALER_STAY_TOTAL = 17
-  CARDS_IN_FIRST_DEAL = 2
+  CARD_SUITS = %w(Spades Hearts Diamonds Clubs)
+  CARD_RANKS = ('2'..'10').to_a + %w(Jack Queen King Ace)
+  CARDS_IN_ONE_DECK = CARD_SUITS.size * CARD_RANKS.size
 
   DECKS_IN_GAME = 1
+  CARDS_IN_GAME = (CARDS_IN_ONE_DECK * DECKS_IN_GAME)
+  CARDS_IN_FIRST_DEAL = 2
   RESHUFFLE_TRIGGER = 0.25
+
+  TARGET_TOTAL = 21
+  DEALER_STAY_TOTAL = 17
 
   def turn_finished?
     blackjack? || twenty_one? || busted?
@@ -22,6 +27,7 @@ module GameSettings
     hand.total > TARGET_TOTAL
   end
 end
+
 
 module Formatting
   def clear_screen
@@ -52,8 +58,11 @@ class Participant
   def display_hand(facedown_card: false)
     participant = self.class == Player ? "YOUR" : "THE DEALER'S"
     puts "#{participant} HAND:"
+
     hand.cards.each_with_index do |card, index|
-      puts facedown_card && index == 1 ? "  Face-down card" : "  #{card}"
+      facedown_index = CARDS_IN_FIRST_DEAL - 1
+      facedown = facedown_card && index == facedown_index
+      puts facedown ? "  Face-down card" : "  #{card}"
     end
   end
 
@@ -113,13 +122,15 @@ class Dealer < Participant
   end
 
   def time_to_reshuffle?
-    deck.number_of_cards < Deck::CARDS_IN_GAME * RESHUFFLE_TRIGGER
+    deck.number_of_cards < (CARDS_IN_GAME * RESHUFFLE_TRIGGER)
   end
 end
 
 
 
 class Hand
+  include GameSettings
+
   attr_accessor :cards
 
   def initialize
@@ -139,17 +150,18 @@ class Hand
   end
 
   def total
-    raw_total = cards.map { |card| card.value }.sum
+    raw_total = cards.map(&:value).sum
     adjust_for_aces(raw_total)
   end
 
   def visible_total
-    self[0].value
+    last_visible_index = CARDS_IN_FIRST_DEAL - 2
+    self[0..last_visible_index].map(&:value).sum
   end
 
   def adjust_for_aces(total)
     number_of_aces = cards.count { |card| card.rank == 'Ace'}
-    number_of_aces.times { total -= 10 if total > GameSettings::TARGET_TOTAL}
+    number_of_aces.times { total -= 10 if total > TARGET_TOTAL}
     total
   end
 end
@@ -159,11 +171,6 @@ end
 
 class Deck
   include GameSettings
-
-  SUITS = %w(Spades Hearts Diamonds Clubs)
-  RANKS = ('2'..'10').to_a + %w(Jack Queen King Ace)
-  CARDS_IN_ONE_DECK = SUITS.size * RANKS.size
-  CARDS_IN_GAME = CARDS_IN_ONE_DECK * DECKS_IN_GAME
 
   attr_accessor :cards
 
@@ -176,8 +183,8 @@ class Deck
   end
 
   def create_one_deck
-    RANKS.each_with_object([]) do |rank, deck|
-      SUITS.each { |suit| deck << Card.new(rank, suit) }
+    CARD_RANKS.each_with_object([]) do |rank, deck|
+      CARD_SUITS.each { |suit| deck << Card.new(rank, suit) }
     end
   end
 
@@ -253,8 +260,9 @@ class TwentyOne
   end
 
   def narrate_opening_deal
+    last_index = CARDS_IN_FIRST_DEAL - 1
     puts "Here's the deal:"
-    opening_deal = [0, 1].flat_map do |index|
+    opening_deal = (0..last_index).flat_map do |index|
       [player.hand[index], dealer.hand[index]]
     end
 
