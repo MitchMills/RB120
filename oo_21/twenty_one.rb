@@ -93,6 +93,10 @@ class Participant
     name
   end
 
+  def hit!(card)
+    hand << card
+  end
+
   def display_hand(facedown_card: false)
     participant = self.class == Player ? "YOUR" : "THE DEALER'S"
     puts "#{participant} HAND:"
@@ -122,10 +126,6 @@ class Player < Participant
   def choose_name
     'Mitch'
   end
-
-  def hit!(card)
-    hand << card
-  end
 end
 
 
@@ -143,10 +143,6 @@ class Dealer < Participant
     CARDS_IN_FIRST_DEAL.times do |_|
       [player, self].each { |recipient| recipient.hit!(deal_one_card!) }
     end
-  end
-
-  def hit!(card)
-    hand << card
   end
 
   def deal_one_card!
@@ -278,7 +274,7 @@ class TwentyOne
 
   def start
     intro
-    deal_opening_hands
+    opening_hands
     player_turn
     # dealer_turn
     # result
@@ -293,7 +289,7 @@ class TwentyOne
     blank_line
   end
 
-  def deal_opening_hands
+  def opening_hands
     dealer.deal_opening_hands!(player)
     display_opening_deal
     display_hands(facedown_card: true)
