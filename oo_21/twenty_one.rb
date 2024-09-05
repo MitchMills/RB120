@@ -40,12 +40,50 @@ module Formatting
 end
 
 
+module Displayable
+  include GameSettings
+
+  def display_opening_deal
+    puts "Here's the deal:"
+    cards = opening_deal_cards
+
+    cards.each_with_index do |card, index|
+      subject_verb = index.even? ? '  You get' : '    The dealer gets'
+      final_index = cards.size - 1
+      dealt_card = index == final_index ? 'a face-down card' : "the #{card}"
+
+      puts "#{subject_verb} #{dealt_card}."
+    end
+    blank_line
+  end
+
+  def opening_deal_cards
+    last_index = CARDS_IN_FIRST_DEAL - 1
+    (0..last_index).flat_map do |index|
+      [player.hand[index], dealer.hand[index]]
+    end
+  end
+
+  def display_hands(facedown_card: false)
+    [dealer, player].each do |participant|
+      hide_card = facedown_card && participant == dealer
+      participant.display_hand(facedown_card: hide_card)
+      participant.display_total(facedown_card: hide_card)
+      blank_line
+    end
+  end
+
+  def display_stayed(participant)
+    subject = participant == player ? 'You' : 'The dealer'
+    puts "#{subject} chose to stay."
+  end
+end
 
 
 class Participant
   include GameSettings
 
-  attr_accessor :hand
+  attr_accessor :hand, :name
 
   def initialize
     @hand = Hand.new
@@ -72,23 +110,21 @@ class Participant
 
     puts "#{label}: #{total}"
   end
-
-  def hit!(card)
-    hand << card
-  end
 end
 
 
 class Player < Participant
-  attr_reader :name
-
   def initialize
     super
-    @name = enter_name
+    @name = 'Mitch'
   end
 
-  def enter_name
+  def choose_name
     'Mitch'
+  end
+
+  def hit!(card)
+    hand << card
   end
 end
 
@@ -107,6 +143,10 @@ class Dealer < Participant
     CARDS_IN_FIRST_DEAL.times do |_|
       [player, self].each { |recipient| recipient.hit!(deal_one_card!) }
     end
+  end
+
+  def hit!(card)
+    hand << card
   end
 
   def deal_one_card!
@@ -226,9 +266,9 @@ end
 
 
 class TwentyOne
-  include GameSettings, Formatting
+  include GameSettings, Formatting, Displayable
 
-  attr_reader :player, :dealer
+  attr_accessor :player, :dealer
 
   def initialize
     clear_screen
@@ -241,7 +281,7 @@ class TwentyOne
     deal_opening_hands
     player_turn
     # dealer_turn
-    # show_result
+    # result
   end
 
 
@@ -255,32 +295,8 @@ class TwentyOne
 
   def deal_opening_hands
     dealer.deal_opening_hands!(player)
-    narrate_opening_deal
+    display_opening_deal
     display_hands(facedown_card: true)
-  end
-
-  def narrate_opening_deal
-    last_index = CARDS_IN_FIRST_DEAL - 1
-    puts "Here's the deal:"
-    opening_deal = (0..last_index).flat_map do |index|
-      [player.hand[index], dealer.hand[index]]
-    end
-
-    opening_deal.each_with_index do |card, index|
-      subject_verb = index.even? ? '  You get' : '    The dealer gets'
-      dealt_card = index == 3 ? 'a face-down card' : "the #{card}"
-      puts "#{subject_verb} #{dealt_card}."
-    end
-    blank_line
-  end
-
-  def display_hands(facedown_card: false)
-    [dealer, player].each do |participant|
-      hide_card = facedown_card && participant == dealer
-      participant.display_hand(facedown_card: hide_card)
-      participant.display_total(facedown_card: hide_card)
-      blank_line
-    end
   end
 
   def player_turn
@@ -299,7 +315,8 @@ class TwentyOne
       break display_stayed(player) if choice == 's'
 
       clear_screen
-      hit_and_display_card(player)
+      player.hit!(dealer.deal_one_card!)
+      display_hit(participant)
       display_hands(facedown_card: true)
     end
   end
@@ -315,14 +332,7 @@ class TwentyOne
     display_stayed(dealer)
   end
 
-  def display_stayed(participant)
-    subject = participant == player ? 'You' : 'The dealer'
-    puts "#{subject} chose to stay."
-  end
-
-  def hit_and_display_card(participant)
-    participant.hit!(dealer.deal_one_card!)
-
+  def display_hit(participant)
     subject = participant == player ? 'You' : 'The dealer'
     puts "#{subject} chose to hit."
     puts "#{subject} got the #{participant.hand[-1]}."
