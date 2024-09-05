@@ -77,6 +77,38 @@ module Displayable
     subject = participant == player ? 'You' : 'The dealer'
     puts "#{subject} chose to stay."
   end
+
+  def display_hit(participant)
+    subject = participant == player ? 'You' : 'The dealer'
+    puts "#{subject} chose to hit."
+    puts "#{subject} got the #{participant.hand[-1]}."
+    blank_line
+  end
+
+  def display_turn_finished(participant)
+    if participant.blackjack?
+      display_blackjack(participant)
+    elsif participant.twenty_one?
+      display_twenty_one(participant)
+    elsif participant.busted?
+      display_busted(participant)
+    end
+  end
+
+  def display_blackjack(participant)
+    puts "#{participant} has a blackjack!"
+    puts
+  end
+
+  def display_twenty_one(participant)
+    puts "#{participant}'s total is 21!"
+    puts
+  end
+
+  def display_busted(participant)
+    puts "#{participant} has busted!"
+    puts
+  end
 end
 
 
@@ -326,38 +358,6 @@ class TwentyOne
     end
     display_hands
     display_stayed(dealer)
-  end
-
-  def display_hit(participant)
-    subject = participant == player ? 'You' : 'The dealer'
-    puts "#{subject} chose to hit."
-    puts "#{subject} got the #{participant.hand[-1]}."
-    blank_line
-  end
-
-  def display_turn_finished(participant)
-    if participant.blackjack?
-      display_blackjack(participant)
-    elsif participant.twenty_one?
-      display_twenty_one(participant)
-    elsif participant.busted?
-      display_busted(participant)
-    end
-  end
-
-  def display_blackjack(participant)
-    puts "#{participant} has a blackjack!"
-    puts
-  end
-
-  def display_twenty_one(participant)
-    puts "#{participant}'s total is 21!"
-    puts
-  end
-
-  def display_busted(participant)
-    puts "#{participant} has busted!"
-    puts
   end
 end
 
