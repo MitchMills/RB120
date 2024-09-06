@@ -22,6 +22,10 @@ module GameSettings
   def busted?
     hand.total > TARGET_TOTAL
   end
+
+  def early_result?
+    player.blackjack? || player.busted?
+  end
 end
 
 
@@ -172,6 +176,19 @@ class Player < Participant
 
   def choose_name
     'Mitch'
+  end
+
+  def hit_or_stay
+    choice = nil
+    loop do
+      print "Do you want to hit or stay? (enter 'h' or 's'): "
+      choice = gets.chomp.downcase
+      break if %w(h s).include?(choice)
+      blank_line
+      puts "Sorry, you must enter 'h', or 's'."
+      blank_line
+    end
+    choice
   end
 end
 
@@ -329,7 +346,7 @@ class TwentyOne
     opening_hands
     player_turn
     dealer_turn
-    # result
+    result
   end
 
 
@@ -352,7 +369,7 @@ class TwentyOne
     loop do
       break display_turn_finished(player) if player.turn_finished?
 
-      choice = player_hit_or_stay
+      choice = player.hit_or_stay
       break display_stayed(player) if choice == 's'
 
       clear_screen
@@ -362,25 +379,15 @@ class TwentyOne
     end
   end
 
-  def player_hit_or_stay
-    choice = nil
-    loop do
-      print "Do you want to hit or stay? (enter 'h' or 's'): "
-      choice = gets.chomp.downcase
-      break if %w(h s).include?(choice)
-      blank_line
-      puts "Sorry, you must enter 'h', or 's'."
-      blank_line
-    end
-    choice
-  end
-
-### TODO: show busted immediately / don't wait for key input
+### TODO: display hidden card if player busts
   def dealer_turn
+    return if early_result?
+
     puts "Now it's the dealer's turn."
     puts "The dealer reveals their hidden card: the #{dealer.hand[-1]}"
     sleep(0.9)
     blank_line
+
     loop do
       display_hands
       print "Enter any key to continue: "
@@ -390,7 +397,26 @@ class TwentyOne
       dealer.hit!(dealer.deal_one_card!)
       display_hit(dealer)
     end
-    display_turn_finished(dealer)
+
+    display_turn_finished(dealer) #FIX?
+  end
+
+  def result
+    if player.busted?
+      puts "Dealer wins"
+    elsif player.blackjack? && dealer.blackjack?
+      puts "It's a tie"
+    elsif player.blackjack?
+      puts "Player wins"
+    elsif dealer.blackjack?
+      puts "Dealer wins"
+    elsif player.hand.total > dealer.hand.total
+      puts "Player wins"
+    elsif player.hand.total == dealer.hand.total
+      puts "It's a tie"
+    elsif player.hand.total < dealer.hand.total
+      puts "Dealer wins"
+    end
   end
 end
 
