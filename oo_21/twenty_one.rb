@@ -44,7 +44,9 @@ module Displayable
   include GameSettings
 
   def display_opening_deal
-    puts "Here's the deal:"
+    clear_screen
+    puts "The dealer deals out the first hand:"
+    sleep(0.9)
     cards = opening_deal_cards
 
     cards.each_with_index do |card, index|
@@ -53,6 +55,7 @@ module Displayable
       dealt_card = index == final_index ? 'a face-down card' : "the #{card}"
 
       puts "#{subject_verb} #{dealt_card}."
+      sleep(0.8)
     end
     blank_line
   end
@@ -65,7 +68,7 @@ module Displayable
   end
 
   def display_hands(facedown_card: false)
-    [dealer, player].each do |participant|
+    [player, dealer].each do |participant|
       hide_card = facedown_card && participant == dealer
       participant.display_hand(facedown_card: hide_card)
       participant.display_total(facedown_card: hide_card)
@@ -81,7 +84,9 @@ module Displayable
   def display_hit(participant)
     subject = participant == player ? 'You' : 'The dealer'
     puts "#{subject} chose to hit."
-    puts "#{subject} got the #{participant.hand[-1]}."
+    sleep(0.9)
+    puts "  #{subject} get the #{participant.hand[-1]}."
+    sleep(0.9)
     blank_line
   end
 
@@ -110,6 +115,7 @@ module Displayable
     puts
   end
 end
+
 
 
 class Participant
@@ -193,6 +199,7 @@ class Dealer < Participant
     deck.number_of_cards < (CARDS_IN_GAME * RESHUFFLE_TRIGGER)
   end
 end
+
 
 
 
@@ -328,18 +335,11 @@ class TwentyOne
   end
 
   def player_turn
+    puts "It's your turn, #{player.name}."
     loop do
       break display_turn_finished(player) if player.turn_finished?
 
-      choice = nil
-      loop do
-        print "Do you want to hit or stay? (enter 'h' or 's'): "
-        choice = gets.chomp.downcase
-        break if %w(h s).include?(choice)
-        puts "Sorry, you must enter 'h', or 's'."
-        blank_line
-      end
-
+      choice = player_hit_or_stay
       break display_stayed(player) if choice == 's'
 
       clear_screen
@@ -349,8 +349,22 @@ class TwentyOne
     end
   end
 
+  def player_hit_or_stay
+    choice = nil
+    loop do
+      print "Do you want to hit or stay? (enter 'h' or 's'): "
+      choice = gets.chomp.downcase
+      break if %w(h s).include?(choice)
+      puts "Sorry, you must enter 'h', or 's'."
+      blank_line(2)
+    end
+    choice
+  end
+
 
   def dealer_turn
+    puts "Now it's the dealer's turn."
+    puts "The dealer reveals their hidden card."
     loop do
       show_all_cards(dealer)
       break display_turn_finished(dealer) if dealer.turn_finished?
