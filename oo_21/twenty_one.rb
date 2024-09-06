@@ -11,10 +11,6 @@ module GameSettings
   TARGET_TOTAL = 21
   DEALER_STAY_TOTAL = 17
 
-  def turn_finished?
-    blackjack? || twenty_one? || busted?
-  end
-
   def blackjack?
     hand.number_of_cards == CARDS_IN_FIRST_DEAL && hand.total == TARGET_TOTAL
   end
@@ -77,15 +73,19 @@ module Displayable
   end
 
   def display_stayed(participant)
+    clear_screen
     subject = participant == player ? 'You' : 'The dealer'
     puts "#{subject} chose to stay."
+    blank_line
   end
 
   def display_hit(participant)
     subject = participant == player ? 'You' : 'The dealer'
-    puts "#{subject} chose to hit."
+    choose = participant == player ? 'choose' : 'chooses'
+    puts "#{subject} #{choose} to hit."
     sleep(0.9)
-    puts "  #{subject} get the #{participant.hand[-1]}."
+    get = participant == player ? 'get' : 'gets'
+    puts "  #{subject} #{get} the #{participant.hand[-1]}."
     sleep(0.9)
     blank_line
   end
@@ -97,21 +97,26 @@ module Displayable
       display_twenty_one(participant)
     elsif participant.busted?
       display_busted(participant)
+    elsif dealer.stay?
+      display_stayed(participant)
     end
   end
 
   def display_blackjack(participant)
-    puts "#{participant} has a blackjack!"
+    subject_verb = participant == player ? "You have" : "The dealer has"
+    puts "#{subject_verb} a blackjack!"
     puts
   end
 
   def display_twenty_one(participant)
-    puts "#{participant}'s total is 21!"
+    subject_verb = participant == player ? "Your" : "The dealer's"
+    puts "#{subject_verb} total is 21!"
     puts
   end
 
   def display_busted(participant)
-    puts "#{participant} has busted!"
+    subject_verb = participant == player ? "You have" : "The dealer has"
+    puts "#{subject_verb} busted!"
     puts
   end
 end
@@ -129,6 +134,10 @@ class Participant
 
   def to_s
     name
+  end
+
+  def turn_finished?
+    blackjack? || twenty_one? || busted?
   end
 
   def hit!(card)
@@ -185,6 +194,10 @@ class Dealer < Participant
 
   def deal_one_card!
     deck.remove_one_card!
+  end
+
+  def turn_finished?
+    blackjack? || twenty_one? || busted? || stay?
   end
 
   def stay?
@@ -315,7 +328,7 @@ class TwentyOne
     intro
     opening_hands
     player_turn
-    # dealer_turn
+    dealer_turn
     # result
   end
 
@@ -355,23 +368,29 @@ class TwentyOne
       print "Do you want to hit or stay? (enter 'h' or 's'): "
       choice = gets.chomp.downcase
       break if %w(h s).include?(choice)
+      blank_line
       puts "Sorry, you must enter 'h', or 's'."
-      blank_line(2)
+      blank_line
     end
     choice
   end
 
-
+### TODO: show busted immediately / don't wait for key input
   def dealer_turn
     puts "Now it's the dealer's turn."
-    puts "The dealer reveals their hidden card."
+    puts "The dealer reveals their hidden card: the #{dealer.hand[-1]}"
+    sleep(0.9)
+    blank_line
     loop do
-      show_all_cards(dealer)
-      break display_turn_finished(dealer) if dealer.turn_finished?
+      display_hands
+      print "Enter any key to continue: "
+      gets
+      clear_screen
+      break if dealer.turn_finished?
       dealer.hit!(dealer.deal_one_card!)
+      display_hit(dealer)
     end
-    display_hands
-    display_stayed(dealer)
+    display_turn_finished(dealer)
   end
 end
 
