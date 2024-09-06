@@ -406,16 +406,12 @@ class TwentyOne
       puts "Dealer wins"
     elsif player.blackjack? && dealer.blackjack?
       puts "It's a tie"
-    elsif player.blackjack?
+    elsif player.blackjack? || player.hand.total > dealer.hand.total
       puts "Player wins"
-    elsif dealer.blackjack?
+    elsif dealer.blackjack? || player.hand.total < dealer.hand.total
       puts "Dealer wins"
-    elsif player.hand.total > dealer.hand.total
-      puts "Player wins"
     elsif player.hand.total == dealer.hand.total
       puts "It's a tie"
-    elsif player.hand.total < dealer.hand.total
-      puts "Dealer wins"
     end
   end
 end
