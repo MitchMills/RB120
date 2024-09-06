@@ -304,7 +304,7 @@ class TwentyOne
     @dealer = Dealer.new
   end
 
-  def start
+  def play
     intro
     opening_hands
     player_turn
@@ -344,7 +344,7 @@ class TwentyOne
 
       clear_screen
       player.hit!(dealer.deal_one_card!)
-      display_hit(participant)
+      display_hit(player)
       display_hands(facedown_card: true)
     end
   end
@@ -361,4 +361,4 @@ class TwentyOne
   end
 end
 
-TwentyOne.new.start
+TwentyOne.new.play
