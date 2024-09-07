@@ -355,7 +355,6 @@ class TwentyOne
     puts "Welcome to Twenty-One!"
     print "Enter any key to start: "
     gets
-    blank_line
   end
 
   def opening_hands
