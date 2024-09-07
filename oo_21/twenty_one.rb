@@ -55,7 +55,7 @@ module Displayable
       dealt_card = index == final_index ? 'a face-down card' : "the #{card}"
 
       puts "#{subject_verb} #{dealt_card}."
-      sleep(0.8)
+      sleep(0.9)
     end
     blank_line
   end
@@ -85,7 +85,7 @@ module Displayable
 
   def display_hit(participant)
     subject = participant == player ? 'You' : 'The dealer'
-    choose = participant == player ? 'choose' : 'chooses'
+    choose = participant == player ? 'chose' : 'has chosen'
     puts "#{subject} #{choose} to hit."
     sleep(0.9)
     get = participant == player ? 'get' : 'gets'
