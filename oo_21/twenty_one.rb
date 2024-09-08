@@ -111,20 +111,20 @@ module Displayable
     puts "#{subject} #{choice_verb} to hit."
     sleep(0.9)
     receive_verb = self.class == Player ? 'receive' : 'receives'
-    puts "  #{subject} #{receive_verb} the #{self.hand[-1]}."
+    puts "  #{subject} #{receive_verb} the #{hand[-1]}."
     sleep(0.9)
     blank_line
   end
 
   def display_turn_finished
-    if self.blackjack?
-      self.display_blackjack
-    elsif self.twenty_one?
-      self.display_twenty_one
-    elsif self.busted?
-      self.display_busted
-    elsif self.stay?
-      self.display_stayed
+    if blackjack?
+      display_blackjack
+    elsif twenty_one?
+      display_twenty_one
+    elsif busted?
+      display_busted
+    elsif stay?
+      display_stayed
     end
   end
 
