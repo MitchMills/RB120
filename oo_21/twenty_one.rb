@@ -117,13 +117,13 @@ module Displayable
   end
 
   def display_turn_finished
-    if self..blackjack?
+    if self.blackjack?
       self.display_blackjack
-    elsif self..twenty_one?
+    elsif self.twenty_one?
       self.display_twenty_one
-    elsif self..busted?
+    elsif self.busted?
       self.display_busted
-    elsif self..stay?
+    elsif self.stay?
       self.display_stayed
     end
   end
