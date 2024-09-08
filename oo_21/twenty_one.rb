@@ -39,8 +39,9 @@ module Formatting
   end
 end
 
-module GameDisplay
-  include GameSettings
+
+module Displayable
+  include GameSettings, Formatting
 
   def display_opening_deal
     clear_screen
@@ -66,19 +67,14 @@ module GameDisplay
     end
   end
 
+
+  ### TODO: FIX IT!
   def display_all_hands(facedown_card: false)
-    [player, dealer].each do |participant|
-      hide_card = facedown_card && participant == dealer
-      participant.display_hand(facedown_card: hide_card)
-      participant.display_total(facedown_card: hide_card)
-      blank_line
-    end
+    player.display_hand_and_total(facedown_card)
+    blank_line
+    dealer.display_hand_and_total(facedown_card)
+    blank_line
   end
-end
-
-
-module Displayable
-  include GameSettings, Formatting
 
   def display_hand(facedown_card: false)
     participant = self.class == Player ? "YOUR" : "THE DEALER'S"
@@ -98,11 +94,19 @@ module Displayable
     puts "#{label}: #{total}"
   end
 
+  def display_hand_and_total(facedown_card: false)
+    display_hand(facedown_card)
+    display_total(facedown_card)
+  end
+
   def display_stayed
     clear_screen
     subject = self.class == Player ? 'You' : 'The dealer'
     puts "#{subject} chose to stay."
     blank_line
+    display_all_hands(facedown_card: true)
+    print "Enter any key to continue to the dealer's turn: "
+    gets
   end
 
   def display_hit
@@ -180,6 +184,10 @@ class Player < Participant
 
   def choose_name
     'Mitch'
+  end
+
+  def stay?
+    hit_or_stay == 's'
   end
 
   def hit_or_stay
@@ -335,7 +343,7 @@ end
 
 
 class TwentyOne
-  include GameSettings, Formatting, GameDisplay
+  include GameSettings, Formatting, Displayable
 
   attr_accessor :player, :dealer
 
@@ -371,10 +379,7 @@ class TwentyOne
     puts "It's your turn, #{player.name}."
     loop do
       break player.display_turn_finished if player.turn_finished?
-
-      choice = player.hit_or_stay
-      break player.display_stayed if choice == 's'
-
+      break player.display_stayed if player.stay?
       clear_screen
       player.hit!(dealer.deal_one_card!)
       player.display_hit
