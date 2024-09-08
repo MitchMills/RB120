@@ -39,8 +39,7 @@ module Formatting
   end
 end
 
-
-module Displayable
+module GameDisplay
   include GameSettings
 
   def display_opening_deal
@@ -50,7 +49,7 @@ module Displayable
     cards = opening_deal_cards
 
     cards.each_with_index do |card, index|
-      subject_verb = index.even? ? '  You get' : '    The dealer gets'
+      subject_verb = index.even? ? '  You recieve' : '    The dealer receives'
       final_index = cards.size - 1
       dealt_card = index == final_index ? 'a face-down card' : "the #{card}"
 
@@ -67,7 +66,7 @@ module Displayable
     end
   end
 
-  def display_hands(facedown_card: false)
+  def display_all_hands(facedown_card: false)
     [player, dealer].each do |participant|
       hide_card = facedown_card && participant == dealer
       participant.display_hand(facedown_card: hide_card)
@@ -75,78 +74,11 @@ module Displayable
       blank_line
     end
   end
-
-  def display_stayed(participant)
-    clear_screen
-    subject = participant == player ? 'You' : 'The dealer'
-    puts "#{subject} chose to stay."
-    blank_line
-  end
-
-  def display_hit(participant)
-    subject = participant == player ? 'You' : 'The dealer'
-    choose = participant == player ? 'chose' : 'has chosen'
-    puts "#{subject} #{choose} to hit."
-    sleep(0.9)
-    get = participant == player ? 'get' : 'gets'
-    puts "  #{subject} #{get} the #{participant.hand[-1]}."
-    sleep(0.9)
-    blank_line
-  end
-
-  def display_turn_finished(participant)
-    if participant.blackjack?
-      display_blackjack(participant)
-    elsif participant.twenty_one?
-      display_twenty_one(participant)
-    elsif participant.busted?
-      display_busted(participant)
-    elsif dealer.stay?
-      display_stayed(participant)
-    end
-  end
-
-  def display_blackjack(participant)
-    subject_verb = participant == player ? "You have" : "The dealer has"
-    puts "#{subject_verb} a blackjack!"
-    puts
-  end
-
-  def display_twenty_one(participant)
-    subject_verb = participant == player ? "Your" : "The dealer's"
-    puts "#{subject_verb} total is 21!"
-    puts
-  end
-
-  def display_busted(participant)
-    subject_verb = participant == player ? "You have" : "The dealer has"
-    puts "#{subject_verb} busted!"
-    puts
-  end
 end
 
 
-
-class Participant
-  include GameSettings
-
-  attr_accessor :hand, :name
-
-  def initialize
-    @hand = Hand.new
-  end
-
-  def to_s
-    name
-  end
-
-  def turn_finished?
-    blackjack? || twenty_one? || busted?
-  end
-
-  def hit!(card)
-    hand << card
-  end
+module Displayable
+  include GameSettings, Formatting
 
   def display_hand(facedown_card: false)
     participant = self.class == Player ? "YOUR" : "THE DEALER'S"
@@ -164,6 +96,78 @@ class Participant
     total = facedown_card ? hand.visible_total : hand.total
 
     puts "#{label}: #{total}"
+  end
+
+  def display_stayed
+    clear_screen
+    subject = self.class == Player ? 'You' : 'The dealer'
+    puts "#{subject} chose to stay."
+    blank_line
+  end
+
+  def display_hit
+    subject = self.class == Player ? 'You' : 'The dealer'
+    choice_verb = self.class == Player ? 'chose' : 'has chosen'
+    puts "#{subject} #{choice_verb} to hit."
+    sleep(0.9)
+    receive_verb = self.class == Player ? 'receive' : 'receives'
+    puts "  #{subject} #{receive_verb} the #{self.hand[-1]}."
+    sleep(0.9)
+    blank_line
+  end
+
+  def display_turn_finished
+    if self..blackjack?
+      self.display_blackjack
+    elsif self..twenty_one?
+      self.display_twenty_one
+    elsif self..busted?
+      self.display_busted
+    elsif self..stay?
+      self.display_stayed
+    end
+  end
+
+  def display_blackjack
+    subject_verb = self.class == Player ? "You have" : "The dealer has"
+    puts "#{subject_verb} a blackjack!"
+    puts
+  end
+
+  def display_twenty_one
+    subject_verb = self.class == Player ? "Your" : "The dealer's"
+    puts "#{subject_verb} total is 21!"
+    puts
+  end
+
+  def display_busted
+    subject_verb = self.class == Player ? "You have" : "The dealer has"
+    puts "#{subject_verb} busted!"
+    puts
+  end
+end
+
+
+
+class Participant
+  include GameSettings, Displayable
+
+  attr_accessor :hand, :name
+
+  def initialize
+    @hand = Hand.new
+  end
+
+  def to_s
+    name
+  end
+
+  def turn_finished?
+    blackjack? || twenty_one? || busted?
+  end
+
+  def hit!(card)
+    hand << card
   end
 end
 
@@ -331,7 +335,7 @@ end
 
 
 class TwentyOne
-  include GameSettings, Formatting, Displayable
+  include GameSettings, Formatting, GameDisplay
 
   attr_accessor :player, :dealer
 
@@ -345,8 +349,8 @@ class TwentyOne
     intro
     opening_hands
     player_turn
-    dealer_turn
-    result
+    # dealer_turn
+    # result
   end
 
 
@@ -360,25 +364,26 @@ class TwentyOne
   def opening_hands
     dealer.deal_opening_hands!(player)
     display_opening_deal
-    display_hands(facedown_card: true)
+    display_all_hands(facedown_card: true)
   end
 
   def player_turn
     puts "It's your turn, #{player.name}."
     loop do
-      break display_turn_finished(player) if player.turn_finished?
+      break player.display_turn_finished if player.turn_finished?
 
       choice = player.hit_or_stay
-      break display_stayed(player) if choice == 's'
+      break player.display_stayed if choice == 's'
 
       clear_screen
       player.hit!(dealer.deal_one_card!)
-      display_hit(player)
-      display_hands(facedown_card: true)
+      player.display_hit
+      display_all_hands(facedown_card: true)
     end
   end
 
-### TODO: display hidden card if player busts
+
+
   def dealer_turn
     return if early_result?
 
@@ -388,16 +393,16 @@ class TwentyOne
     blank_line
 
     loop do
-      display_hands
+      display_all_hands
       print "Enter any key to continue: "
       gets
       clear_screen
       break if dealer.turn_finished?
       dealer.hit!(dealer.deal_one_card!)
-      display_hit(dealer)
+      dealer.display_hit
     end
 
-    display_turn_finished(dealer) #FIX?
+    dealer.display_turn_finished
   end
 
   def result

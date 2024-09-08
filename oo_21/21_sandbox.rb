@@ -1,11 +1,12 @@
 =begin
-
+%: opening_hands
 
 *** EARLY FINISH / NO DEALER TURN ***
 
 PLAYER BLACKJACK && DEALER BLACKJACK
-  {display opening deal
-  {display opening hands => PLAYER BLACKJACK
+  % display opening deal
+  % display opening hands => PLAYER BLACKJACK
+
   {display message: blackjack
   {any key to continue
 
@@ -17,8 +18,9 @@ PLAYER BLACKJACK && DEALER BLACKJACK
 
 
 PLAYER BLACKJACK && NO DEALER BLACKJACK
-  {display opening deal
-  {display opening hands => PLAYER BLACKJACK
+  % display opening deal
+  % display opening hands => PLAYER BLACKJACK
+
   {display message: blackjack
   {any key to continue
 
@@ -30,8 +32,9 @@ PLAYER BLACKJACK && NO DEALER BLACKJACK
 
 
 PLAYER BUSTED
-  {display opening deal
-  {display opening hands => NO BLACKJACK
+  % display opening deal
+  % display opening hands => NO BLACKJACK
+
   {display message: hit or stay => PLAYER HITS (can be multiple times)
   * clear screen *
   <display message: you chose to hit
@@ -53,8 +56,9 @@ PLAYER BUSTED
 *** REGULAR FINISH / PROCEED TO DEALER TURN
 
 PLAYER TWENTY ONE
-  {display opening deal
-  {display opening hands => NO BLACKJACK
+  % display opening deal
+  % display opening hands => NO BLACKJACK
+
   {display message: hit or stay => PLAYER HITS (can be multiple times)
   * clear screen *
   <display message: you chose to hit
@@ -69,8 +73,9 @@ PLAYER TWENTY ONE
   DEALER TURN
 
 PLAYER STAYS
-  {display opening deal
-  {display opening hands => NO BLACKJACK
+  % display opening deal
+  % display opening hands => NO BLACKJACK
+
   {display message: hit or stay => PLAYER STAYS (can be after hits)
 
   * clear screen *
