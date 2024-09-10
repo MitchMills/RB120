@@ -102,3 +102,17 @@ dealer blackjack => DEALER WINS
 
 
 =end
+
+def alphabetized(string)
+  string.chars.sort_by { |char, index| char.downcase }.join
+end
+p alphabetized('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') #== 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ'
+
+# def length_alphabetical(sentence)
+#   sentence.split.sort_by { |word| [word.size, word.downcase] }
+# end
+
+# p length_alphabetical('To say yes or no') == ["no", "or", "To", "say", "yes"]
+# p length_alphabetical('A man a plan a canal Panama') == ["A", "a", "a", "man", "plan", "canal", "Panama"]
+# p length_alphabetical('The quick brown fox jumps over the lazy dog') == ["dog", "fox", "The", "the", "lazy", "over", "brown", "jumps", "quick"]
+# p length_alphabetical('The Slow Path for Studious Learners to a Career in Software Development') == ["a", "in", "to", "for", "The", "Path", "Slow", "Career", "Learners", "Software", "Studious", "Development"]
