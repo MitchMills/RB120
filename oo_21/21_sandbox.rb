@@ -103,4 +103,7 @@ dealer blackjack => DEALER WINS
 
 =end
 
-p ['ab', 'a'].sort
+my_array = ['b', 'ab', 'a', 'ccc', 'cca', 'aa']
+p my_array.sort_by { |string| [string.size, string] } == ["a", "b", "aa", "ab", "cca", "ccc"]
+
+p my_array.sort_by { |string| [string, string.size] } == ["a", "aa", "ab", "b", "cca", "ccc"]
