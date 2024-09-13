@@ -103,6 +103,7 @@ dealer blackjack => DEALER WINS
 
 =end
 
+
 my_array = ['b', 'ab', 'a', 'ccc', 'cca', 'aa']
 
 p my_array.sort == ["a", "aa", "ab", "b", "cca", "ccc"]

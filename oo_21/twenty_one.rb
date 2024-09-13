@@ -76,6 +76,7 @@ module Displayable
     blank_line
   end
 
+
   def display_hand(facedown_card: false)
     participant = self.class == Player ? "YOUR" : "THE DEALER'S"
     puts "#{participant} HAND:"
