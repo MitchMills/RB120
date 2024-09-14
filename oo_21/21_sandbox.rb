@@ -103,13 +103,34 @@ dealer blackjack => DEALER WINS
 
 =end
 
+# def alphabetized(string)
+#   alpha_characters = string.chars.select do |char|
+#     ('a'..'z').include?(char.downcase)
+#   end
 
-my_array = ['b', 'ab', 'a', 'ccc', 'cca', 'aa']
+#   alpha_characters.sort_by do |char|
+#     [char.downcase, string.index(char)]
+#   end.join
+# end
 
-p my_array.sort == ["a", "aa", "ab", "b", "cca", "ccc"]
+def alphabetized(string)
+  alpha_characters = string.chars.select do |char|
+    ('a'..'z').include?(char.downcase)
+  end
 
-p my_array.sort_by { |string| string.size } == ["b", "a", "ab", "aa", "ccc", "cca"]
+  alpha_characters.sort_by.with_index do |char, index|
+    [char.downcase, index]
+  end.join
+end
 
-p my_array.sort_by { |string| [string.size, string] } == ["a", "b", "aa", "ab", "cca", "ccc"]
+p alphabetized('') == ''
+p alphabetized(' ') == ''
+p alphabetized('9#$.%') == ''
+p alphabetized(' ba ') == 'ab'
+p alphabetized('Ab Ba') == 'AabB'
+p alphabetized('Ba Ab') == 'aABb'
+p alphabetized('9A #b$B .a%') == 'AabB'
+p alphabetized('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') == 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ'
 
-p my_array.sort_by { |string| [string, string.size] } == ["a", "aa", "ab", "b", "cca", "ccc"]
+p alphabetized('bA aB') == 'AabB'
+p alphabetized('bA aBb') == 'AabBb'
