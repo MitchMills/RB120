@@ -1,113 +1,38 @@
-class Student
-  def initialize(name, grade)
-    @name = name
-    @grade = grade
-  end
+### QUESTION TWO
+=begin
+A module is a collection of behaviors (methods) that can be used by other classes if the module is included ("mixed in") in the class definition.
 
-  def better_grade_than?(other_student)
-    grade > other_student.grade
-  end
+One purpose of a module is to group a set of behaviors / methods in one place so that they can be used by multiple classes without having to duplicate these methods within the classes themselves.
 
-  protected
-  attr_reader :grade
+A module can be used by a class if the `#include` method is used in the definition of that class, with the module name as an argument.
+=end
+
+module Audible
+  def make_sound(sound)
+    puts sound
+  end
 end
 
-fred = Student.new('Fred', 99)
-mike = Student.new('Mike', 88)
-p fred.better_grade_than?(mike)
+class Cat
+  include Audible
+end
 
-############
-# class Vehicle
-#   attr_accessor :color
-#   attr_reader :year, :model
-#   @@number_of_vehicles = 0
+chumley = Cat.new
+chumley.make_sound('meow!')
 
-#   def self.number_of_vehicles
-#     puts "Number of vehicles: #{@@number_of_vehicles}"
-#   end
 
-#   def self.gas_mileage(miles_driven, gallons_used)
-#     mpg = miles_driven.fdiv(gallons_used).round(2)
-#     puts "Your gas mileage is #{mpg} miles per gallon."
-#   end
+### QUESTION ONE
+=begin
+We create an object in Ruby by invoking the `#new` method on either a built-in class, or a custom class that we have defined. This creates an instance of that class.
+=end
 
-#   def initialize(year, color, model)
-#     @year = year
-#     self.color = color
-#     @model = model
-#     @current_speed = 0
-#     @@number_of_vehicles += 1
-#   end
+# my_string = String.new('Hello World!')
 
-#   def age
-#     "Your #{color} #{model} is #{car_age} years old."
-#   end
+# class MyClass
 
-#   def accelerate(amount)
-#     @current_speed += amount
-#     puts "Accelerating by #{amount} miles per hour."
-#     current_speed
-#   end
-
-#   def decelerate(amount)
-#     @current_speed -= amount
-#     puts "Decelerating by #{amount} miles per hour."
-#     current_speed
-#   end
-
-#   def current_speed
-#     puts "Your current speed is now #{@current_speed} miles per hour."
-#   end
-
-#   def turn_off
-#     @current_speed = 0
-#     puts "You have turned off the vehicle."
-#   end
-
-#   def spray_paint(color)
-#     former_color = self.color
-#     self.color = color
-#     puts "Your formerly #{former_color} car is now #{color}!"
-#   end
-
-#   def to_s
-#     "#{year} #{color} #{model}"
-#   end
-
-#   private
-
-#   def car_age
-#     Time.now.year - self.year
-#   end
 # end
 
-# module CargoTasks
-#   def load_bed(material)
-#     puts "Putting #{material} in the bed."
-#   end
+# my_object = MyClass.new
 
-#   def emtpy_bed
-#     puts "Emptying the bed."
-#   end
-# end
-
-# class MyCar < Vehicle
-#   NUMBER_OF_DOORS = 4
-
-#   def to_s
-#     "This car is a " + super + "."
-#   end
-# end
-
-# class MyTruck < Vehicle
-#   include CargoTasks
-
-#   NUMBER_OF_DOORS = 2
-
-#   def to_s
-#     "This truck is a " + super + "."
-#   end
-# end
-
-# fred = MyCar.new(2015, 'silver', 'honda fit')
-# puts fred.age
+# puts my_string
+# puts my_object
