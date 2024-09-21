@@ -8,8 +8,12 @@ Human < Player
 Computer < Player
 
 Choice
-  CHOICES = [rock, paper, scissors, spock, lizard]
-  @choice
+  CHOICES = [rock, paper, scissors, lizard, spock]
+  @choice           # rock
+  @defeats          # scissors, lizard
+  @active_verbs     # smashes, crushes
+  @is_defeated_by   # paper, spock
+  @passive_verbs    # is covered by, is vaporized by
 
 Game
   @human
