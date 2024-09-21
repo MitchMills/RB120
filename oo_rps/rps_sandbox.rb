@@ -48,7 +48,7 @@ Choice
       }
   }
 
-Game
+RPSGame
   @human
   @computer
   @stats
@@ -61,6 +61,8 @@ Match
   @winner
 Round
   @winner
+
+
 
 * ORCHESTRATION *
 intro
