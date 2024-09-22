@@ -1,34 +1,7 @@
-class Player
-  attr_reader :name, :choice
+module RPSRules
+  RPS_CHOICES = %w(rock paper scissors)
+  RPSLS_CHOICES = %w(rock paper scissors lizard spock)
 
-  private
-  attr_writer :name, :choice
-end
-
-class Human < Player
-  private
-  def set_name
-    @name = 'Mitch'
-  end
-
-  def choose
-    @choice = 'rock'
-  end
-end
-
-class Computer < Player
-  private
-  def set_name
-    @name = 'Hal'
-  end
-
-  def choose
-    @choice = Choice::CHOICES.sample
-  end
-end
-
-class Choice
-  CHOICES = %w(rock paper scissors lizard spock)
   CHOICES_DATA = {
     rock: {
       defeats: ['scissors', 'lizard'],
@@ -63,6 +36,46 @@ class Choice
   }
 end
 
+class Player
+  attr_reader :name, :choice
+
+  private
+  attr_writer :name, :choice
+end
+
+class Human < Player
+  private
+  def set_name
+    @name = 'Mitch'
+  end
+
+  def choose
+    @choice = 'rock'
+  end
+end
+
+class Computer < Player
+  private
+  def set_name
+    @name = 'Hal'
+  end
+
+  def choose
+    @choice = RPSRules::RPSLS_CHOICES.sample
+  end
+end
+
+class Choice
+  attr_reader :choice
+
+  def compare_choices(other_choice)
+
+  end
+
+  protected
+  attr_writer :choice
+end
+
 class Round
   attr_reader :player_choice, :computer_choice, :winner
 
@@ -72,7 +85,7 @@ class Round
   end
 
   def winner
-
+    player_choice.compare_choices(computer_choice)
   end
 
   private
