@@ -1,6 +1,7 @@
 module RPSRules
   RPS_CHOICES = %w(rock paper scissors)
-  RPSLS_CHOICES = %w(rock paper scissors lizard spock)
+  RPSLS_CHOICES = RPS_CHOICES + %w(lizard spock)
+  RPSFW_CHOICES = RPS_CHOICES + %w(fire water)
 
   CHOICES_DATA = {
     rock: {
@@ -36,7 +37,11 @@ module RPSRules
   }
 end
 
+
+
 class Player
+  include RPSRules
+
   attr_reader :name, :choice
 
   private
@@ -44,37 +49,59 @@ class Player
 end
 
 class Human < Player
-  private
+  attr_reader :name, :choice
+
   def set_name
     @name = 'Mitch'
   end
 
   def choose
-    @choice = 'rock'
+    @choice = Choice.new('rock')
   end
+
+  private
+  attr_writer :name, :choice
 end
 
 class Computer < Player
-  private
+  attr_reader :name, :choice
+
   def set_name
     @name = 'Hal'
   end
 
   def choose
-    @choice = RPSRules::RPSLS_CHOICES.sample
+    @choice = Choice.new(RPSRules::RPSLS_CHOICES.sample)
   end
+
+  private
+  attr_writer :name, :choice
 end
 
+
+
 class Choice
+  include RPSRules
+
   attr_reader :choice
 
-  def compare_choices(other_choice)
+  def initialize(choice)
+    @choice = choice
+  end
+
+  def >(other_choice)
+
+  end
+
+  def <(other_choice)
 
   end
 
   protected
   attr_writer :choice
 end
+
+
 
 class Round
   attr_reader :player_choice, :computer_choice, :winner
@@ -116,6 +143,9 @@ class Match
   private
   attr_writer :round_number, :scores, :winner
 end
+
+
+
 
 class RPSGame
   def initialize
