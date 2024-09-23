@@ -1,7 +1,9 @@
 module RPSRules
+  GAMES_PER_MATCH = 5
+
   RPS_CHOICES = %w(rock paper scissors)
   RPSLS_CHOICES = RPS_CHOICES + %w(lizard spock)
-  RPSFW_CHOICES = RPS_CHOICES + %w(fire water)
+  # RPSFW_CHOICES = RPS_CHOICES + %w(fire water)
 
   CHOICES_DATA = {
     rock: {
@@ -124,16 +126,17 @@ class Round
 end
 
 class Match
-  attr_reader :scores, :round_number, :round, :winner
+  attr_reader :scores, :round, :winner
 
   def initialize
-    @scores = {player: 0, computer: 0, ties: 0}
-    @round_number = scores.values.sum + 1
+    @scores = Scores.new
     @round = Round.new
   end
 
-  def update_scores
-
+  def round_number
+    current = scores.total + 1
+    max = RPSRules::GAMES_PER_MATCH
+    current <= max ? current : max
   end
 
   def result
@@ -145,7 +148,28 @@ class Match
   end
 
   private
-  attr_writer :round_number, :scores, :winner
+  attr_writer :scores, :winner
+end
+
+class Scores
+  attr_reader :player, :computer, :ties
+
+  def initialize
+    @player = 0
+    @computer = 0
+    @ties = 0
+  end
+
+  def total
+    player + computer + ties
+  end
+
+  def update(result)
+    result += 1
+  end
+
+  private
+  attr_writer :player, :computer, :ties
 end
 
 
