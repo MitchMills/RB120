@@ -115,7 +115,7 @@ class Round
     @computer_choice = get_computer_choice
   end
 
-  def winner
+  def result
     player_choice.compare_choices(computer_choice)
   end
 
@@ -136,11 +136,11 @@ class Match
 
   end
 
-  def winner
+  def result
 
   end
 
-  def winner?
+  def over?
 
   end
 
