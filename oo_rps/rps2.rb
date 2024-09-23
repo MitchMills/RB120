@@ -71,7 +71,7 @@ class Computer < Player
   end
 
   def choose
-    @choice = Choice.new(RPSRules::RPSLS_CHOICES.sample)
+    @choice = Choice.new(RPSLS_CHOICES.sample)
   end
 
   private
@@ -87,6 +87,10 @@ class Choice
 
   def initialize(choice)
     @choice = choice
+  end
+
+  def compare_choices(other_choice)
+
   end
 
   def >(other_choice)
