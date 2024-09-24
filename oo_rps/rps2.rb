@@ -172,11 +172,32 @@ class Scores
   attr_writer :player, :computer, :ties
 end
 
+class Stats
+  def initialize
+    @player_match_wins = 0
+    @computer_match_wins = 0
+    @match_ties = 0
+  end
+
+  private
+  attr_accessor :player_match_wins, :computer_match_wins, :match_ties
+end
+
 
 
 
 class RPSGame
+
   def initialize
+    @human = Human.new
+    @computer = Computer.new
+    @stats = Stats.new
+  end
+
+  def update_stats(result)
 
   end
+
+  private
+  attr_accessor :human, :computer, :stats
 end
