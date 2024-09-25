@@ -51,8 +51,6 @@ class Player
 end
 
 class Human < Player
-  attr_reader :name, :choice
-
   def set_name
     @name = 'Mitch'
   end
@@ -60,14 +58,9 @@ class Human < Player
   def choose
     @choice = Choice.new('rock')
   end
-
-  private
-  attr_writer :name, :choice
 end
 
 class Computer < Player
-  attr_reader :name, :choice
-
   def set_name
     @name = 'Hal'
   end
@@ -75,9 +68,6 @@ class Computer < Player
   def choose
     @choice = Choice.new(RPSLS_CHOICES.sample)
   end
-
-  private
-  attr_writer :name, :choice
 end
 
 
@@ -85,26 +75,26 @@ end
 class Choice
   include RPSRules
 
-  attr_reader :choice
+  attr_reader :substance
 
-  def initialize(choice)
-    @choice = choice
+  def initialize(substance)
+    @substance = substance
   end
 
-  def compare_choices(other_choice)
-
-  end
-
-  def >(other_choice)
+  def compare_choices(other_substance)
 
   end
 
-  def <(other_choice)
+  def >(other_substance)
+
+  end
+
+  def <(other_substance)
 
   end
 
   protected
-  attr_writer :choice
+  attr_writer :substance
 end
 
 
