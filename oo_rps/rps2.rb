@@ -75,39 +75,39 @@ end
 class Choice
   include RPSRules
 
-  attr_reader :substance
+  attr_reader :type
 
-  def initialize(substance)
-    @substance = substance
+  def initialize(type)
+    @type = type
   end
 
-  def compare_choices(other_substance)
-
-  end
-
-  def >(other_substance)
+  def compare_choices(other_type)
 
   end
 
-  def <(other_substance)
+  def >(other_type)
+
+  end
+
+  def <(other_type)
 
   end
 
   protected
-  attr_writer :substance
+  attr_writer :type
 end
 
-class Rock < Choice
+# class Rock < Choice
 
-end
+# end
 
-class Paper < Choice
+# class Paper < Choice
 
-end
+# end
 
-class Scissors < Choice
+# class Scissors < Choice
 
-end
+# end
 
 
 
