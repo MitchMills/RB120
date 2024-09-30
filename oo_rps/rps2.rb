@@ -97,18 +97,6 @@ class Choice
   attr_writer :type
 end
 
-# class Rock < Choice
-
-# end
-
-# class Paper < Choice
-
-# end
-
-# class Scissors < Choice
-
-# end
-
 
 
 class Round
