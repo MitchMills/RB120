@@ -79,6 +79,7 @@ class Choice
 
   def initialize(type)
     @type = type
+    @data = CHOICES_DATA[type]
   end
 
   def compare_choices(other_type)
@@ -94,7 +95,7 @@ class Choice
   end
 
   protected
-  attr_writer :type
+  attr_writer :type, :data
 end
 
 
