@@ -185,10 +185,14 @@ class RPSGame
     @stats = Stats.new
   end
 
+  def set_game_type(type)
+    game_type = type
+  end
+
   def update_stats(result)
 
   end
 
   private
-  attr_accessor :human, :computer, :stats
+  attr_accessor :human, :computer, :stats, :game_type
 end
