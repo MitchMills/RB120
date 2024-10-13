@@ -185,7 +185,7 @@ class RPSGame
     @stats = Stats.new
   end
 
-  def set_game_type(type) # e.g. rps, rpsls, rpsfw
+  def set_game_type(type) # e.g. rps, rpsls, rpsfw (maybe move to Match class)
     @game_type = type
   end
 
